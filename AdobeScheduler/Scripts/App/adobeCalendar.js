@@ -16,7 +16,7 @@ $(function () {
     var adobeConnect = $.connection.adobeConnect;
 
     adobeConnect.client.addEvent = function (data) {
-        $('#calendar').fullCalendar('renderEvent', data);
+        $('#calendar').fullCalendar('renderEvent', data,true);
     }
 
     adobeConnect.client.responceMessage = function (message) {
