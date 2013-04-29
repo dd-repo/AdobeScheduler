@@ -1,0 +1,9 @@
+﻿@model AdobeScheduler.Models.ViewObject
+@{
+    ViewBag.Title = "Room";
+ 
+}
+
+<h2>@ViewBag.Course</h2>
+
+<iframe src="@Model.Appointment.adobeUrl" name="embed_meeting_room_open" width="1000" height="900" scrolling="auto"></iframe>

@@ -1,0 +1,108 @@
+﻿@model AdobeScheduler.Models.ViewObject
+@{
+    ViewBag.Title = "Dashboard";
+    
+}
+@Scripts.Render("~/adobe/app")
+<style type='text/css'>
+
+	#calendar {
+		width: 100%;
+		margin: 0 auto;
+    }
+
+    .modal-body { height: 225px; max-height: 700px; }
+
+</style>
+<div id="main-menu">
+        
+        <div id="phone-navigation">
+            <select class="selectnav" id="phone-menu">
+                
+                <option value="index.html" >AdobeScheduler</option>
+                    
+                    
+            </select>
+        </div>
+
+        <ul class="nav nav-tabs">
+            <li ><a href="reports" ><i class="icon-globe"></i> <span>Reports</span></a></li>
+            <li ><a href="#addAppointment" data-toggle="modal" ><i class=" icon-plus"></i> <span>Reserve Room</span></a></li>
+        </ul>
+</div>
+ 
+<div id="addAppointment" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Appointment Form</h3>
+  </div>
+  <div class='modal-body'>
+    <form id="modal-form" class="form-horizontal" accept-charset="UTF-8"  data-remote="true" >
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">Select Your Room:</label>
+                <div class="controls">
+                    <select id="class" class="">
+                    @if(Model.Session.MyMeetings != null){
+                        foreach( AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
+                        {
+                            <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
+                            
+                        }
+                    }else{
+                        <option>You have no Class Rooms Assigned</option>
+                    }
+                    </select>
+                </div>
+                <hr />
+                <label class="control-label">Select a Date And Time:</label>
+                <div class="controls">
+                    <input type="text" class="span4" id="date" data-date-format="m/dd/yy" value="@DateTime.Now.ToShortDateString()" />
+                    <div class="input-append bootstrap-timepicker">
+                      <input id="time" type="text" class="input-small">
+                      <span class="add-on"><i class="icon-time"></i></span>
+                   </div>
+               </div>
+                <hr />
+                <label class="control-label">Duration (in Min):</label>
+                <div class="controls">
+                    <select id="duration"style="width: 60px">
+                        <option>30</option>
+                        <option>60</option>
+                        <option>90</option>
+                    </select>
+                </div>
+                <hr />
+                <label class="control-label">Number of  Participants:</label>
+                <div class="controls">
+                    <input type="text" class="span4" id="room_size" />
+               </div>
+
+        </fieldset>
+    </form>
+  </div>
+
+    <div class='modal-footer'>
+        <input type="submit" id="AppointMent_Submit" class='btn btn-primary' value="Submit" />
+    </div>
+</div>
+
+<h2>Adobe Connect Scheduler</h2>
+
+
+
+<div id="loader" class="spinner">
+    <div class="bar1"></div>
+    <div class="bar2"></div>
+    <div class="bar3"></div>
+    <div class="bar4"></div>
+    <div class="bar5"></div>
+    <div class="bar6"></div>
+    <div class="bar7"></div>
+    <div class="bar8"></div>
+    <div class="bar9"></div>
+    <div class="bar10"></div>
+    <div class="bar11"></div>
+    <div class="bar12"></div>
+</div>
+<div id="calendar"></div>

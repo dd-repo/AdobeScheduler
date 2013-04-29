@@ -1,0 +1,79 @@
+﻿@model AdobeScheduler.Models.ViewObject
+@{
+     
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Scripts.Render("~/js")
+    @Styles.Render("~/Content/calendar")
+
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aguafina+Script">
+    @Styles.Render("~/content/css")
+    
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
+  <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
+  <!--[if IE 8 ]> <body class="ie ie8 "> <![endif]-->
+  <!--[if IE 9 ]> <body class="ie ie9 "> <![endif]-->
+  <!--[if (gt IE 9)|!(IE)]><!--> 
+  <body class=""> 
+  <!--<![endif]-->
+    
+    <div class="navbar">
+        <div class="navbar-inner">
+                <ul class="nav pull-right">
+                    <li id="fat-menu" class="dropdown">
+                        <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-user"></i> @Context.User.Identity.Name
+                            <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="logout">Logout</a></li>
+                        </ul>
+                    </li>
+                    
+                </ul>
+                <a class="brand" >SAU Online Campus Addobe Connect Scheduler</a>
+        </div>
+    </div>
+
+    
+    
+    <div id="sidebar-nav">
+        
+        <ul id="dashboard-menu" class="nav nav-list">
+            <li class="active"><a href="/"><i class="icon-calendar"></i> <span>AdobeScheduler</span></a>    
+        </ul>
+    </div>
+    
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row-fluid">
+
+
+<div id='content' data-userId="@Model.Session.Id">
+     @RenderBody()
+</div>
+
+               
+                <footer>
+                    <hr>
+                    <p class="pull-right">Designed with Twitter Bootstrap</p>
+                    <p>&copy; 2012 <a href="http://southern.edu">Southern Adventist University</a></p>
+                </footer>
+                
+            </div>
+        </div>
+    </div>
+    
+    <script src="~/SignalR/Hubs"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

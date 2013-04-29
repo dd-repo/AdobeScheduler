@@ -1,0 +1,25 @@
+﻿@model AdobeScheduler.Models.LoginUser
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Auth.cshtml";
+
+}
+
+@Scripts.Render("~/adobe/login")
+<p class="brand"> SAU Online Campus</p>
+<div class="block">            
+      @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id="loginform", @class="form-vertical" }))
+      {
+          <p>@Html.ValidationMessageFor(m => m.Username, null, new { style = "font-size; .8em; color:red;" })</p>
+          <p>@Html.ValidationMessageFor(m => m.Password, null, new { style = "font-size; .8em; color:red;" })</p>
+        <label>Username</label>
+        @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class="span12",id="uname" })
+        <label>Password</label>
+        @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class="span12", id="pass" })
+        <div class="form-actions">
+            <input type="submit" class="btn btn-success pull-right" value="Login" />
+            <div class="clearfix"></div>
+        </div>
+       }      
+
+</div>
