@@ -58,7 +58,7 @@
             <div class="row-fluid">
 
 
-<div id='content' data-userId="@Model.Session.Id">
+<div id='content' data-userId="@Context.User.Identity.Name">
      @RenderBody()
 </div>
 

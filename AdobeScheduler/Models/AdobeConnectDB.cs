@@ -9,5 +9,6 @@ namespace AdobeScheduler.Models
     public class AdobeConnectDB : DbContext
     {
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Room> Rooms { get; set; }
     }
 }

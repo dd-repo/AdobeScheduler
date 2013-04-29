@@ -199,6 +199,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\AdobeStream.cs" />
+    <Compile Include="Migrations\201304291925063_InitialCreate.cs" />
+    <Compile Include="Migrations\201304291925063_InitialCreate.Designer.cs">
+      <DependentUpon>201304291925063_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AdobeConnectDB.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\User.cs" />
@@ -343,6 +348,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201304291925063_InitialCreate.resx">
+      <DependentUpon>201304291925063_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

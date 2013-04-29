@@ -9,14 +9,20 @@ $(function () {
         
     });
 
-
     // TimePicker Set Up
     $('#time').timepicker();
 
     var adobeConnect = $.connection.adobeConnect;
 
-    adobeConnect.client.addEvent = function (data) {
-        $('#calendar').fullCalendar('renderEvent', data,true);
+    adobeConnect.client.addSelf = function (event) {
+        var array = $('#calendar').fullCalendar('clientEvents');
+        for (i in array) {
+            if (event.end >= array[i].start && event.start <= array[i].end) {
+                alert('overlapping');
+            }
+        }
+        $('#calendar').fullCalendar('renderEvent', event, true);
+        console.log(event);
     }
 
     adobeConnect.client.responceMessage = function (message) {
@@ -29,7 +35,11 @@ $(function () {
 
     adobeConnect.client.count = function (data) {
         console.log(data);
-   }
+    }
+
+    adobeConnect.client.addEvent = function (s) {
+        adobeConnect.server.addSelf(s,$('#content').attr('data-userId'))
+    }
 
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments()
@@ -49,13 +59,9 @@ $(function () {
                         element.find(".fc-event-inner")
                                  .append("&nbsp;&nbsp;<b>Room-Size</b>:" + event.roomSize);
                         if ($('#content').attr('data-userId') == event.userId) {
-                            element.find('.fc-event-inner').removeClass('fc-event-skin');
-                            element.find('.fc-event-head').removeClass('fc-event-skin');
-                            element.find('.fc-event-head').addClass('fc-event-skin-red');
-                            element.find('.fc-event-inner').addClass('fc-event-skin-red');
-                            var html = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#"><i class="icon-info-sign"></i></a>'
-                            element.find(".fc-event-content")
-                                    .append(html);
+                            var html = '<a href="#"><i class="icon-info-sign" style="float:right;"></i></a>'
+                            element.find(".fc-event-time").append(
+                                    (html));
                             
                         }
 
@@ -78,8 +84,9 @@ $(function () {
             var date = $('#date').val();
             var time = $('#time').val();
             var room_size = $('#room_size').val();
+            var end = $('#duration option:selected').text();
             if (room_size != "") {
-                adobeConnect.server.addAppointment(userId, class_name, room_size, url, path, date, time);
+                adobeConnect.server.addAppointment(userId, class_name, room_size, url, path, date, time,end);
                 $('#addAppointment').modal('hide');
             }
         });

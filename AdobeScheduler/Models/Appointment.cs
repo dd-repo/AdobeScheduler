@@ -8,11 +8,12 @@ namespace AdobeScheduler.Models
     public class Appointment
     {
         public int id { get; set; }
-        public int userId { get; set; }
+        public string userId { get; set; }
         public string title { get; set; }
         public string url { get; set; }
         public string adobeUrl { get; set; }
         public DateTime start { get; set; }
+        public DateTime end { get; set; }
         public bool allDay { get; set; }
         public int roomSize { get; set; }
 
@@ -20,5 +21,12 @@ namespace AdobeScheduler.Models
         {
             this.allDay = false;
         }
+    }
+
+    public class Room
+    {
+        public int id { get; set; }
+        public int userNum { get; set; }
+        public virtual ICollection<Appointment> Rooms { get; set; }
     }
 }
