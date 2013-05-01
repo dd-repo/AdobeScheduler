@@ -5,9 +5,10 @@
 
 }
 
-@Scripts.Render("~/adobe/login")
+@Scripts.Render("~/adobe/app")
 <p class="brand"> Academic Tech</p>
-<div class="block">            
+<div class="block">
+    <div id="error"></div>            
       @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id="loginform", @class="form-vertical" }))
       {
           <p>@Html.ValidationMessageFor(m => m.Username, null, new { style = "font-size; .8em; color:red;" })</p>
@@ -16,10 +17,11 @@
         @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class="span12",id="uname" })
         <label>Password</label>
         @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class="span12", id="pass" })
+       }      
         <div class="form-actions">
-            <input type="submit" class="btn btn-success pull-right" value="Login" />
+           <button id="login" class="btn btn-success pull-right">Button</button>
             <div class="clearfix"></div>
         </div>
-       }      
 
 </div>
+<div id="request" style="display:none;"></div>

@@ -4,6 +4,12 @@
 
 $(function () {
 
+
+
+    function validForm() {
+        return false;
+    }
+
     //DatPicker Set Up 
     $('#date').datepicker({}).on('changeDate', function (e) {
         console.log(e);
@@ -24,8 +30,12 @@ $(function () {
     var adobeConnect = $.connection.adobeConnect;
 
     adobeConnect.client.addSelf = function (add, event, max) {
+        console.log(event.roomSize,event.start, max);
+       var html = "<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> A maximum of <b> " + max + "</b> occupants <small> <u>including the host</u> </small> are avaible" + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
-        html ="<div class='alert alert-warning'>A maximum of "+max+" are avaible"+"</div>"
+        if (event.roomSize > max) {
+            html = "<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> Seats are filled or you are over the alloted maximum" + "</div>";
+        }
         $('#error').html(html);
         if (event.roomSize <= max && add) {
             $('#calendar').fullCalendar('renderEvent', event, true);
@@ -38,9 +48,6 @@ $(function () {
     }
 
 
-    adobeConnect.client.responceMessage = function (message) {
-        alert(message);
-    }
 
     adobeConnect.client.userinfo = function (data) {
         console.log(data);
@@ -68,25 +75,46 @@ $(function () {
                     defaultView: 'month',
                     editable: false,
                     eventRender: function (event, element, view) {
-                        element.find(".fc-event-inner")
-                                 .append("&nbsp;&nbsp;<b>Room-Size</b>:" + event.roomSize);
+                        var roomHtml;
+                        if (view.name == 'month') {
+                            roomHtml = "</br><b>Occupants</b>: " + "<u>"+event.roomSize+"</u>";
+                            element.find(".fc-event-inner")
+                                     .append(roomHtml);
+                        }
+
                         if ($('#content').attr('data-userId') == event.userId) {
                             var html = '<a href="#"><i class="icon-info-sign" style="float:right;"></i></a>'
                             element.find(".fc-event-time").append(
                                     (html));
-                            
+
                         }
 
-                        else {
-                            
+                        if (view.name == 'agendaDay') {
+                            roomHtml = "<div' style='padding-left:30%'><b>Occupants</b>: " + "<u>" + event.roomSize + "</u></div>";
+                            element.find(".fc-event-time")
+                                     .append(roomHtml);
                         }
-                      
+                        
                     },
                     events: data,
 
                 });
             });
 
+
+       
+        $('button#login').click(function (e) {
+            adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
+                if (res != "") {
+                    $('#request').html('<iframe src="' + res + '></iframe>');
+                    $('#loginform').submit();
+                } else {
+                    html = "<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Error!</strong> Invalid Credentials </div>";
+                    $('#error').html(html);
+                }
+                
+            });
+        });
        
         $('#occupants').blur(function (e) {
             var class_name = $('#class option:selected').text();
@@ -140,12 +168,6 @@ $(function () {
         });
 
         
-        $('#loginform').submit(function (e) {
-            
-            adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
-                e.preventDefault;
-            });
-        });
     });
 
 

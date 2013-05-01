@@ -67,23 +67,24 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public bool Login(string username, string password)
+        public string Login(string username, string password)
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
             StatusInfo sInfo;
             if (adobeObj.Login(username, password, out sInfo)== false)
             {
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                { return false; }
+                { return ""; }
                 else
                 {
-                    Clients.Caller.responceMessage("Invalid Credentials!");
-                    return false;
+                    return "";
                 }
             }
             else
             {
-                return true;
+                string _adobeUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}",username,password);
+                string _targetUrl = _adobeUrl  + "?session=" + sInfo.SessionInfo;
+                return _targetUrl;
             }
         }
 
