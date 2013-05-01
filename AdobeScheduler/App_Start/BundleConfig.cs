@@ -45,7 +45,8 @@ namespace AdobeScheduler
                 "~/Scripts/jquery.validate.unobtrusive-custom-for-bootstrap.js",
                 "~/Scripts/fullcalendar.js",
                 "~/Scripts/bootstrap-datepicker.js",
-                "~/Scripts/bootstrap-timepicker.js"
+                "~/Scripts/bootstrap-timepicker.js",
+                "~/Scripts/chosen.jquery.js"
                 ));
 
             bundles.Add(new StyleBundle("~/content/css").Include(
@@ -53,6 +54,7 @@ namespace AdobeScheduler
                 "~/Content/datepicker.css",
                 "~/Content/bootstrap-timepicker.css",
                 "~/Content/Site.css",
+                "~/Content/chosen.css",
                 "~/Content/bootstrap-responsive.css",
                 "~/Content/bootstrap-mvc-validation.css"
                 ));

@@ -11,7 +11,7 @@
 		margin: 0 auto;
     }
 
-    .modal-body { height: 225px; max-height: 700px; }
+    .modal-body { height: 255px; max-height: 900px; }
 
 </style>
 <div id="main-menu">
@@ -26,7 +26,6 @@
         </div>
 
         <ul class="nav nav-tabs">
-            <li ><a href="reports" ><i class="icon-globe"></i> <span>Reports</span></a></li>
             <li ><a href="#addAppointment" data-toggle="modal" ><i class=" icon-plus"></i> <span>Reserve Room</span></a></li>
         </ul>
 </div>
@@ -73,17 +72,23 @@
                     </select>
                 </div>
                 <hr />
-                <label class="control-label">Number of  Participants:</label>
-                <div class="controls">
-                    <input type="text" class="span4" id="room_size" />
-               </div>
-
+                <label class="control-label">Number of Occupants:</label>
+                 <div class="controls">
+                    <select id="occupants"style="width: 60px">
+                       @for (int i = 1; i <= 50; i++)
+                       {
+                           <option>@i</option>    
+                       }
+                    </select>
+                </div>
+                <div id="error"></div>
+                 
         </fieldset>
     </form>
   </div>
 
     <div class='modal-footer'>
-        <input type="submit" id="AppointMent_Submit" class='btn btn-primary' value="Submit" />
+        <input disabled type="submit" id="AppointMent_Submit" class='btn btn-success' value="Submit" />
     </div>
 </div>
 

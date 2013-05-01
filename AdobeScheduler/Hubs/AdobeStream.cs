@@ -30,7 +30,7 @@ namespace AdobeScheduler.Hubs
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
     {
-        public void AddAppointment(string id, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
+        public void AddAppointment(bool isChecked,string id, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
         {
             DateTime t = DateTime.ParseExact(Jstime, "hh:mm tt", CultureInfo.InvariantCulture);
             DateTime Tempdate = DateTime.Parse(Jsdate);
@@ -53,9 +53,16 @@ namespace AdobeScheduler.Hubs
                     appointment.adobeUrl = url;
                     appointment.start = date;
                     appointment.end = end;
-                    _db.Appointments.Add(appointment);
-                    _db.SaveChanges();
-                    Clients.All.addEvent(appointment);
+                    if (isChecked)
+                    {
+                        _db.Appointments.Add(appointment);
+                        _db.SaveChanges();
+                        Clients.All.addEvent(appointment, isChecked);
+                    }
+                    else
+                    {
+                        Clients.Caller.addEvent(appointment, isChecked);
+                    }
                 }
             }
         }
@@ -80,10 +87,35 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public void addSelf(Appointment data, string id)
+        public void addSelf(Appointment data, string id, bool isChecked)
         {
-           var calendarData = ConstructObject(data,id);
-           Clients.Caller.addSelf(calendarData);
+            int selfTotal = 0;
+            int remaining;
+            using (AdobeConnectDB _db = new AdobeConnectDB())
+            {
+                var query = (from r in _db.Appointments
+                             where ((data.start >= r.start && data.start <= r.end) || (data.end >= r.start && data.end <= r.end))
+                             select r
+                    );
+
+                foreach (Appointment appoinment in query)
+                {
+                    selfTotal += appoinment.roomSize;
+                }
+
+                var calendarData = ConstructObject(data, id);
+                remaining = 50 - selfTotal;
+                if (isChecked)
+                {
+                    Clients.Caller.addSelf(true, calendarData, remaining);
+                }
+                Clients.Client(Context.ConnectionId).addSelf(false, calendarData, remaining);
+
+            }
+
+            
+           
+           
         }
 
         public Task<List<CalendarData>> GetAllAppointments()

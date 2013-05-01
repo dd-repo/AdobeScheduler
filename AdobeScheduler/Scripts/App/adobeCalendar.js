@@ -5,8 +5,17 @@
 $(function () {
 
     //DatPicker Set Up 
-    $('#date').datepicker({
-        
+    $('#date').datepicker({}).on('changeDate', function (e) {
+        console.log(e);
+        var class_name = $('#class option:selected').text();
+        var url = $('#class option:selected').attr('data-url');
+        var path = $('#class option:selected').attr('data-path');
+        var userId = $('#content').attr('data-userId');
+        var date = $('#date').val();
+        var time = $('#time').val();
+        var room_size = $('#occupants option:selected').text();
+        var end = $('#duration option:selected').text();
+        adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
     });
 
     // TimePicker Set Up
@@ -14,16 +23,20 @@ $(function () {
 
     var adobeConnect = $.connection.adobeConnect;
 
-    adobeConnect.client.addSelf = function (event) {
-        var array = $('#calendar').fullCalendar('clientEvents');
-        for (i in array) {
-            if (event.end >= array[i].start && event.start <= array[i].end) {
-                alert('overlapping');
-            }
+    adobeConnect.client.addSelf = function (add, event, max) {
+        $("#AppointMent_Submit").prop("disabled", true);
+        html ="<div class='alert alert-warning'>A maximum of "+max+" are avaible"+"</div>"
+        $('#error').html(html);
+        if (event.roomSize <= max && add) {
+            $('#calendar').fullCalendar('renderEvent', event, true);
         }
-        $('#calendar').fullCalendar('renderEvent', event, true);
-        console.log(event);
+
+        if (event.roomSize <= max) {
+            $('#AppointMent_Submit').removeAttr('disabled');
+        }
+        
     }
+
 
     adobeConnect.client.responceMessage = function (message) {
         alert(message);
@@ -37,14 +50,13 @@ $(function () {
         console.log(data);
     }
 
-    adobeConnect.client.addEvent = function (s) {
-        adobeConnect.server.addSelf(s,$('#content').attr('data-userId'))
+    adobeConnect.client.addEvent = function (s,checked) {
+        adobeConnect.server.addSelf(s,$('#content').attr('data-userId'),checked)
     }
 
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments()
             .done(function (data) {
-                alert("done");
                 console.log(data);
                 $('.spinner').remove();
                 $('#calendar').fullCalendar({
@@ -53,7 +65,7 @@ $(function () {
                         center: 'title',
                         right: 'month,agendaWeek,agendaDay'
                     },
-                    defaultView: 'agendaWeek',
+                    defaultView: 'month',
                     editable: false,
                     eventRender: function (event, element, view) {
                         element.find(".fc-event-inner")
@@ -76,6 +88,44 @@ $(function () {
             });
 
        
+        $('#occupants').blur(function (e) {
+            var class_name = $('#class option:selected').text();
+            var url = $('#class option:selected').attr('data-url');
+            var path = $('#class option:selected').attr('data-path');
+            var userId = $('#content').attr('data-userId');
+            var date = $('#date').val();
+            var time = $('#time').val();
+            var room_size = $('#occupants option:selected').text();
+            var end = $('#duration option:selected').text();
+            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+        });
+
+
+        $('#time').timepicker().on('changeTime.timepicker', function (e) {
+            var class_name = $('#class option:selected').text();
+            var url = $('#class option:selected').attr('data-url');
+            var path = $('#class option:selected').attr('data-path');
+            var userId = $('#content').attr('data-userId');
+            var date = $('#date').val();
+            var time = $('#time').val();
+            var room_size = $('#occupants option:selected').text();
+            var end = $('#duration option:selected').text();
+            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+        });
+
+        $('#class').blur(function (e) {
+            var class_name = $('#class option:selected').text();
+            var url = $('#class option:selected').attr('data-url');
+            var path = $('#class option:selected').attr('data-path');
+            var userId = $('#content').attr('data-userId');
+            var date = $('#date').val();
+            var time = $('#time').val();
+            var room_size = $('#occupants option:selected').text();
+            var end = $('#duration option:selected').text();
+            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+        });
+
+
         $('#AppointMent_Submit').click(function () {
             var class_name = $('#class option:selected').text();
             var url = $('#class option:selected').attr('data-url');
@@ -83,14 +133,13 @@ $(function () {
             var userId = $('#content').attr('data-userId');
             var date = $('#date').val();
             var time = $('#time').val();
-            var room_size = $('#room_size').val();
+            var room_size = $('#occupants option:selected').text();
             var end = $('#duration option:selected').text();
-            if (room_size != "") {
-                adobeConnect.server.addAppointment(userId, class_name, room_size, url, path, date, time,end);
-                $('#addAppointment').modal('hide');
-            }
+            adobeConnect.server.addAppointment(true, userId, class_name, room_size, url, path, date, time, end);
+            $('#addAppointment').modal('hide');
         });
 
+        
         $('#loginform').submit(function (e) {
             
             adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
