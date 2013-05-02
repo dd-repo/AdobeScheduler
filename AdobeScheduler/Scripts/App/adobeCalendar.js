@@ -70,7 +70,7 @@ $(function () {
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'month,agendaWeek,agendaDay'
+                        right: 'month'
                     },
                     defaultView: 'month',
                     editable: false,
@@ -97,17 +97,35 @@ $(function () {
                         
                     },
                     events: data,
+                    dayClick: function (date, allDay, jsEvent, view) {
+                        console.log(date.toLocaleDateString());
+                        $('#date').val(date.toLocaleDateString());
+                        $('#addAppointment').modal('show');
+                    },
 
                 });
             });
+
+        function moveToDay(date) {
+            var toDate = new Date(date);
+            //alert(toDate);
+            $('#calendar').fullCalendar('changeView', 'agendaDay');
+            $('#calendar').fullCalendar('gotoDate', toDate);
+        }
+
+
 
 
        
         $('button#login').click(function (e) {
             adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
                 if (res != "") {
-                    $('#request').html('<iframe src="' + res + '></iframe>');
-                    $('#loginform').submit();
+                    $('#request').html("<iframe src='" + res + "'" + " ></iframe>");
+                    setTimeout(function () {
+                        $('#loginform').submit();
+                        //location.reload();
+                    },3000);
+                   
                 } else {
                     html = "<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Error!</strong> Invalid Credentials </div>";
                     $('#error').html(html);
