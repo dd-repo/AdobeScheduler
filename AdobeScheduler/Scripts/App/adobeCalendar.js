@@ -4,37 +4,23 @@
 
 $(function () {
 
-
-
-    function validForm() {
-        return false;
-    }
+    var adobeConnect = $.connection.adobeConnect;
 
     //DatPicker Set Up 
     $('#date').datepicker({}).on('changeDate', function (e) {
-        console.log(e);
-        var class_name = $('#class option:selected').text();
-        var url = $('#class option:selected').attr('data-url');
-        var path = $('#class option:selected').attr('data-path');
-        var userId = $('#content').attr('data-userId');
-        var date = $('#date').val();
-        var time = $('#time').val();
-        var room_size = $('#occupants option:selected').text();
-        var end = $('#duration option:selected').text();
-        adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
     });
 
     // TimePicker Set Up
     $('#time').timepicker();
 
-    var adobeConnect = $.connection.adobeConnect;
+   
 
     adobeConnect.client.addSelf = function (add, event, max) {
         console.log(event.roomSize,event.start, max);
        var html = "<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> A maximum of <b> " + max + "</b> occupants <small> <u>including the host</u> </small> are avaible" + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
-            html = "<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> Seats are filled or you are over the alloted maximum" + "</div>";
+            html = "<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> Seats are filled or you are over the alloted maximum of <b>" +max+ "</b></div>";
         }
         $('#error').html(html);
         if (event.roomSize <= max && add) {
@@ -47,7 +33,48 @@ $(function () {
         
     }
 
+    getDate = function (date) {
+        date = new Date(date);
+        return date.toLocaleDateString();
+    }
 
+    getDuration = function (start, end) {
+        return(parseInt(end-start)/(1000*60));
+    }
+
+    convertTime = function (date) {
+        var oclock = 'AM';
+        var minutes = date.getMinutes();
+        if (date.getHours() == 0) {
+            hours = "12";
+        }
+        if (date.getHours() < 10) {
+            var hours = "0" + date.getHours();
+        } else {
+            hours = date.getHours();
+        }
+                
+        if (date.getHours() >= 12) {
+            oclock = 'PM';
+            if (date.getHours() == 12) {
+                hours = date.getHours();
+            } else if (date.getHours() < 22)  {
+                hours = "0" + (date.getHours() - 12);
+            } else {
+                hours = date.getHours() - 12;
+            }
+        }
+        if (date.getHours() == 0) {
+            hours = "12";
+        }
+        
+        if (date.getMinutes() == 0) {
+            minutes = "00";
+        }
+
+        return hours + ":" + minutes + " " + oclock;
+
+    }
 
     adobeConnect.client.userinfo = function (data) {
         console.log(data);
@@ -64,13 +91,11 @@ $(function () {
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments()
             .done(function (data) {
-                console.log(data);
                 $('.spinner').remove();
                 $('#calendar').fullCalendar({
                     header: {
-                        left: 'prev,next today',
+                        left: 'prev,next today month',
                         center: 'title',
-                        right: 'month'
                     },
                     defaultView: 'month',
                     editable: false,
@@ -83,7 +108,7 @@ $(function () {
                         }
 
                         if ($('#content').attr('data-userId') == event.userId) {
-                            var html = '<a href="#"><i class="icon-info-sign" style="float:right;"></i></a>'
+                            var html = '<a id="editEvent" href="#'+event.id+'"><i class="icon-info-sign" style="float:right;"></i></a>'
                             element.find(".fc-event-time").append(
                                     (html));
 
@@ -98,24 +123,53 @@ $(function () {
                     },
                     events: data,
                     dayClick: function (date, allDay, jsEvent, view) {
-                        console.log(date.toLocaleDateString());
-                        $('#date').val(date.toLocaleDateString());
-                        $('#addAppointment').modal('show');
+                        if (view.name == 'month') {
+                            $('#calendar').fullCalendar('changeView', 'agendaDay');
+                            $('#calendar').fullCalendar('gotoDate', date);
+
+                        }
+
+                        if (view.name == 'agendaDay') {
+                            $('#date').val(date.toLocaleDateString());
+                            $('#time').val(convertTime(date));
+                            $('#AppointMent_Submit').val('Create Appointment');
+                            $('#addAppointment').modal('show');
+                        }
                     },
+                    eventClick: function (event, element) {
+                        if (element.target.className == 'icon-info-sign') {
+                            var cal_hash = element.target.parentElement.hash;
+                            $('#class option:selected').text(event.title);
+                            $('#date').val(getDate(event.start));
+                            $('#time').val(convertTime(event.start));
+                            console.log(event);
+                            $('#occupants').val(event.roomSize);
+                            $('#duration option:selected').text(getDuration(event.start, event.end));
+                            var html ="";
+                            $('#AppointMent_Submit').val('Update Appointment');
+                            $('#addAppointment').modal('show');
+                        }
+                        else {
+                            if (event.url) window.open(event.url, event.title);
+                        }
+                        return false;
+                    }
 
                 });
             });
 
-        function moveToDay(date) {
-            var toDate = new Date(date);
-            //alert(toDate);
-            $('#calendar').fullCalendar('changeView', 'agendaDay');
-            $('#calendar').fullCalendar('gotoDate', toDate);
+
+        addAppointment = function (checked) {
+            var class_name = $('#class option:selected').text();
+            var url = $('#class option:selected').attr('data-url');
+            var path = $('#class option:selected').attr('data-path');
+            var userId = $('#content').attr('data-userId');
+            var date = $('#date').val();
+            var time = $('#time').val();
+            var room_size = $('#occupants').val();
+            var end = $('#duration option:selected').text();
+            adobeConnect.server.addAppointment(checked, userId, class_name, room_size, url, path, date, time, end);
         }
-
-
-
-
        
         $('button#login').click(function (e) {
             adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
@@ -123,8 +177,7 @@ $(function () {
                     $('#request').html("<iframe src='" + res + "'" + " ></iframe>");
                     setTimeout(function () {
                         $('#loginform').submit();
-                        //location.reload();
-                    },3000);
+                    },100);
                    
                 } else {
                     html = "<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Error!</strong> Invalid Credentials </div>";
@@ -133,57 +186,61 @@ $(function () {
                 
             });
         });
-       
-        $('#occupants').blur(function (e) {
-            var class_name = $('#class option:selected').text();
-            var url = $('#class option:selected').attr('data-url');
-            var path = $('#class option:selected').attr('data-path');
-            var userId = $('#content').attr('data-userId');
-            var date = $('#date').val();
-            var time = $('#time').val();
-            var room_size = $('#occupants option:selected').text();
-            var end = $('#duration option:selected').text();
-            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+        
+        $('.numbersOnly').keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g, '');
+        });
+
+        $('#occupants').keyup(function (e) {
+            if ($('#AppointMent_Submit').val() == "Create Appointment" && $('#duration option:selected').text() != '') {
+                addAppointment(false);
+            }
         });
 
 
-        $('#time').timepicker().on('changeTime.timepicker', function (e) {
-            var class_name = $('#class option:selected').text();
-            var url = $('#class option:selected').attr('data-url');
-            var path = $('#class option:selected').attr('data-path');
-            var userId = $('#content').attr('data-userId');
-            var date = $('#date').val();
-            var time = $('#time').val();
-            var room_size = $('#occupants option:selected').text();
-            var end = $('#duration option:selected').text();
-            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+        $('#time').on('change', function () {
+            if ($('#AppointMent_Submit').val() == "Create Appointment" && $('#duration option:selected').text() != '') {
+                addAppointment(false);
+            }
         });
 
         $('#class').blur(function (e) {
-            var class_name = $('#class option:selected').text();
-            var url = $('#class option:selected').attr('data-url');
-            var path = $('#class option:selected').attr('data-path');
-            var userId = $('#content').attr('data-userId');
-            var date = $('#date').val();
-            var time = $('#time').val();
-            var room_size = $('#occupants option:selected').text();
-            var end = $('#duration option:selected').text();
-            adobeConnect.server.addAppointment(false, userId, class_name, room_size, url, path, date, time, end);
+            if ($('#AppointMent_Submit').val() == "Create Appointment" && $('#duration option:selected').text() != '') {
+                addAppointment(false);
+            }
         });
 
 
         $('#AppointMent_Submit').click(function () {
-            var class_name = $('#class option:selected').text();
-            var url = $('#class option:selected').attr('data-url');
-            var path = $('#class option:selected').attr('data-path');
-            var userId = $('#content').attr('data-userId');
-            var date = $('#date').val();
-            var time = $('#time').val();
-            var room_size = $('#occupants option:selected').text();
-            var end = $('#duration option:selected').text();
-            adobeConnect.server.addAppointment(true, userId, class_name, room_size, url, path, date, time, end);
+            addAppointmnt(true);
             $('#addAppointment').modal('hide');
         });
+
+        $('#addAppointment').on('show', function () {
+            if ($('#duration option:selected').text() == '') {
+                $('#duration option:selected').text('50');
+            }
+            if($('#AppointMent_Submit').val() == "Create Appointment" && $('#duration option:selected').text() != ''){
+                addAppointment(false);
+            }
+        });
+
+
+        $('#addAppointment').on('hide', function () {
+            $('#error').remove();
+            console.log(event);
+            $('#occupants').val('');
+            $('#duration option:selected').text('');
+
+        });
+        $('#addAppointment').click(function () {
+            $('#AppointMent_Submit').val('Create Appointment');
+            if ($('#date').val() == "") {
+                date = new Date();
+                $('#date').val(date.toLocaleDateString());
+            }
+        });
+        
 
         
     });

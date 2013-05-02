@@ -82,8 +82,7 @@ namespace AdobeScheduler.Hubs
             }
             else
             {
-                string _adobeUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}",username,password);
-                string _targetUrl = _adobeUrl  + "?session=" + sInfo.SessionInfo;
+                string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}",username,password);
                 return _targetUrl;
             }
         }
