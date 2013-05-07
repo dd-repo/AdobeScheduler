@@ -282,8 +282,9 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <None Include="Properties\PublishProfiles\econnect - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\econnect - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\saucal - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\saucal - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\App\adobeCalendar.js" />
     <Content Include="Scripts\App\login.js" />

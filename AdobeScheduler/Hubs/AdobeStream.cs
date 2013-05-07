@@ -30,7 +30,7 @@ namespace AdobeScheduler.Hubs
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
     {
-        public void AddAppointment(bool isChecked,string id, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
+        public bool AddAppointment(bool isChecked,bool isUpdate, string id, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
         {
             DateTime t = DateTime.ParseExact(Jstime, "hh:mm tt", CultureInfo.InvariantCulture);
             DateTime Tempdate = DateTime.Parse(Jsdate);
@@ -38,10 +38,8 @@ namespace AdobeScheduler.Hubs
             TimeSpan time = t.TimeOfDay;
             DateTime date = Tempdate.Add(time);
             DateTime end = date.AddMinutes(endtime);
-            if(String.IsNullOrEmpty(roomSize)){
-                Clients.Caller.responceMessage("Missing Data");
-            }
-            else{
+            if (!isUpdate)
+            {
                 using (AdobeConnectDB _db = new AdobeConnectDB())
                 {
                     Appointment appointment = new Appointment();
@@ -57,14 +55,53 @@ namespace AdobeScheduler.Hubs
                     {
                         _db.Appointments.Add(appointment);
                         _db.SaveChanges();
-                        Clients.All.addEvent(appointment, isChecked);
+                        Clients.All.addEvent(appointment, isChecked,isUpdate);
+                        return true;
                     }
                     else
                     {
-                        Clients.Caller.addEvent(appointment, isChecked);
+                        Clients.Caller.addEvent(appointment, isChecked,isUpdate);
+                        return false;
                     }
                 }
             }
+            else
+            {
+                int Id = int.Parse(id);
+                using (AdobeConnectDB _db = new AdobeConnectDB())
+                {
+                    var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
+                    if (query.start > date || query.start < date)
+                    {
+                        query.start = date;
+                        query.roomSize = int.Parse(roomSize);
+                        query.title = name;
+                        query.adobeUrl = url;
+                        query.url = path;
+                        query.start = date;
+                        query.end = end;
+                        Clients.Caller.addEvent(query, isChecked, false);
+                        return false;
+                    }
+                    query.roomSize = int.Parse(roomSize);
+                    query.title = name;
+                    query.adobeUrl = url;
+                    query.url = path;
+                    query.start = date;
+                    query.end = end;
+                    if (isChecked)
+                    {
+                        _db.SaveChanges();
+                        return true;
+                    }
+                    else
+                    {
+                        Clients.Caller.addEvent(query, isChecked,isUpdate);
+                        return false;
+                    }
+                }
+            }
+
         }
 
         public string Login(string username, string password)
@@ -87,7 +124,7 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public void addSelf(Appointment data, string id, bool isChecked)
+        public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate)
         {
             int selfTotal = 0;
             int remaining;
@@ -105,6 +142,7 @@ namespace AdobeScheduler.Hubs
 
                 var calendarData = ConstructObject(data, id);
                 remaining = 50 - selfTotal;
+                if (isUpdate) { remaining = 50 - selfTotal + data.roomSize; }
                 if (isChecked)
                 {
                     Clients.Caller.addSelf(true, calendarData, remaining);
@@ -169,6 +207,25 @@ namespace AdobeScheduler.Hubs
             }
 
             return callendarData;
+        }
+
+        public bool Delete(string id)
+        {
+            int Id = int.Parse(id);
+            using (AdobeConnectDB _db =  new AdobeConnectDB()){
+
+                var query = from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet;
+                foreach (Appointment res in query){
+                    _db.Appointments.Remove(res);
+                }
+                if (_db.SaveChanges()>0)
+                {
+                    Clients.All.removeSelf(Id);
+                    return true;
+                }
+
+            }
+            return false;
         }
     }
 }

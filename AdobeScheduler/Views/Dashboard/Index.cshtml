@@ -41,7 +41,7 @@
         </div>
 
         <ul class="nav nav-tabs">
-            <li ><a href="#addAppointment" data-toggle="modal" ><i class=" icon-plus"></i> <span>Reserve Room</span></a></li>
+            <li ><a id="reserve_room" href="#addAppointment" data-toggle="modal" ><i class=" icon-plus"></i> <span>Reserve Room</span></a></li>
         </ul>
 </div>
  
@@ -56,7 +56,7 @@
             <div class="control-group">
                 <label class="control-label">Select Your Room:</label>
                 <div class="controls">
-                    <select id="class" class="">
+                    <select id="class" width="300" style="width: 300px">
                     @if(Model.Session.MyMeetings != null){
                         foreach( AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
                         {
@@ -97,9 +97,7 @@
     </form>
   </div>
 
-    <div class='modal-footer'>
-        <input disabled type="submit" id="AppointMent_Submit" class='btn btn-success' value="Create Appointment" />
-    </div>
+    <div class='modal-footer'></div>
 </div>
 
 <h2>Adobe Connect Scheduler</h2>
