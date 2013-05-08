@@ -286,6 +286,7 @@
     <None Include="Properties\PublishProfiles\econnect - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\saucal - FTP.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="InstallSqlState.sql" />
     <Content Include="Scripts\App\adobeCalendar.js" />
     <Content Include="Scripts\App\login.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />

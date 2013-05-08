@@ -30,7 +30,7 @@ namespace AdobeScheduler.Hubs
     [HubName("adobeConnect")]
     public class AdobeStream : Hub
     {
-        public bool AddAppointment(bool isChecked,bool isUpdate, string id, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
+        public bool AddAppointment(bool isChecked,bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string Jsdate, string Jstime,string min)
         {
             DateTime t = DateTime.ParseExact(Jstime, "hh:mm tt", CultureInfo.InvariantCulture);
             DateTime Tempdate = DateTime.Parse(Jsdate);
@@ -44,7 +44,7 @@ namespace AdobeScheduler.Hubs
                 {
                     Appointment appointment = new Appointment();
                     CalendarData callendarData = new CalendarData();
-                    appointment.userId = id;
+                    appointment.userId = userId;
                     appointment.title = name;
                     appointment.roomSize = int.Parse(roomSize);
                     appointment.url = path;
@@ -67,11 +67,11 @@ namespace AdobeScheduler.Hubs
             }
             else
             {
-                int Id = int.Parse(id);
+                int Id = int.Parse(roomId);
                 using (AdobeConnectDB _db = new AdobeConnectDB())
                 {
                     var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
-                    if (query.start > date || query.start < date)
+                    if (query.start >= date || query.start <= date)
                     {
                         query.start = date;
                         query.roomSize = int.Parse(roomSize);
@@ -80,7 +80,7 @@ namespace AdobeScheduler.Hubs
                         query.url = path;
                         query.start = date;
                         query.end = end;
-                        Clients.Caller.addEvent(query, isChecked, false);
+                        Clients.Caller.addEvent(query, isChecked, true);
                         return false;
                     }
                     query.roomSize = int.Parse(roomSize);
@@ -92,6 +92,7 @@ namespace AdobeScheduler.Hubs
                     if (isChecked)
                     {
                         _db.SaveChanges();
+                        Clients.All.addEvent(query, true, true);
                         return true;
                     }
                     else
@@ -124,7 +125,7 @@ namespace AdobeScheduler.Hubs
             }
         }
 
-        public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate)
+        public void addSelf(Appointment data, string id, bool isChecked, bool isUpdate, int max)
         {
             int selfTotal = 0;
             int remaining;
@@ -142,7 +143,10 @@ namespace AdobeScheduler.Hubs
 
                 var calendarData = ConstructObject(data, id);
                 remaining = 50 - selfTotal;
-                if (isUpdate) { remaining = 50 - selfTotal + data.roomSize; }
+                if (isUpdate) { 
+                    remaining = (50 - selfTotal+max);
+                    Clients.Caller.updateSelf(calendarData);
+                }
                 if (isChecked)
                 {
                     Clients.Caller.addSelf(true, calendarData, remaining);

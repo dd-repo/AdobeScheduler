@@ -7,20 +7,18 @@ using System.Web.Routing;
 
 namespace AdobeScheduler.Security
 {
-    public class AdobeAuthorizeAttribute: AuthorizeAttribute
+    public class AdobeAuthorizeAttribute: ActionFilterAttribute
     {
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-
-            if (HttpContext.Current.Session["AdobeObj"] == null)
+            base.OnActionExecuting(context);
+            if (HttpContext.Current.Session["UserSession"] == null)
             {
-                filterContext.Result = new RedirectToRouteResult(
-                        new RouteValueDictionary
-                        {
-                            {"action","Login"},
-                            {"controller","Auth"}
-                        });
-
+                context.Result = new RedirectToRouteResult(new RouteValueDictionary(new
+               {
+                   controller = "Auth",
+                   action = "Login"
+               }));
             }
         }
     }

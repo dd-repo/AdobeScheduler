@@ -17,6 +17,7 @@ namespace AdobeScheduler.Controllers
         // GET: /Dashboard/
 
         [Authorize]
+        [AdobeAuthorize]
         public ActionResult Index()
         {
             UserSession model = (UserSession)Session["UserSession"];
@@ -25,6 +26,7 @@ namespace AdobeScheduler.Controllers
         }
 
         [Authorize]
+        [AdobeAuthorize]
         public ActionResult Report()
         {
             return View();

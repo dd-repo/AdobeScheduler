@@ -4,15 +4,13 @@
 
 $(function () {
     window.isUpdate = false;
+    window.max = 50;
     var adobeConnect = $.connection.adobeConnect;
 
 
-    addAppointment = function (checked, isUpdate) {
-        var Id;
-        if (window.Id == 'undefined') {
-            Id = $('#content').attr('data-userId');
-        }
-        else { Id = window.Id; }
+    addAppointment = function (checked, isUpdate, event) {
+        var roomId = window.Id;
+        var userId = $('#content').attr('data-userId');
         var class_name = $('#class option:selected').text();
         var url = $('#class option:selected').attr('data-url');
         var path = $('#class option:selected').attr('data-path');
@@ -20,13 +18,13 @@ $(function () {
         var time = $('#time').val();
         var room_size = $('#occupants').val();
         var end = $('#duration option:selected').text();
-        adobeConnect.server.addAppointment(checked,isUpdate, Id, class_name, room_size, url, path, date, time, end);
+        adobeConnect.server.addAppointment(checked, window.isUpdate, roomId, userId, class_name, room_size, url, path, date, time, end);
         if (checked) { $('#addAppointment').modal('hide'); }
     }
 
     //DatPicker Set Up 
     $('#date').datepicker({}).on('changeDate', function () {
-        if ($('#AppointMent_Submit').val() == "Create Appointment" && $('#duration option:selected').text() != '') {
+        if ($('#duration option:selected').text() != '' && $('#occupants').val() != '')  {
             addAppointment(false);
         }
     });
@@ -36,14 +34,14 @@ $(function () {
    
 
     adobeConnect.client.addSelf = function (add, event, max) {
-        console.log(event.roomSize,event.start, max);
+       console.log(event.roomSize, max);
        var html = "<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> A maximum of <b> " + max + "</b> occupants <small> <u>including the host</u> </small> are avaible" + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
             html = "<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> Seats are filled or you are over the alloted maximum of <b>" +max+ "</b></div>";
         }
         $('#error').html(html);
-        if (event.roomSize <= max && add) {
+        if (add) {
             $('#calendar').fullCalendar('renderEvent', event, true);
         }
 
@@ -51,6 +49,11 @@ $(function () {
             $('#AppointMent_Submit').removeAttr('disabled');
         }
         
+    }
+
+    adobeConnect.client.updateSelf = function (event) {
+        $('#calendar').fullCalendar('removeEvents', event.id);
+        $('#calendar').fullCalendar('renderEvent', event,true);
     }
 
     adobeConnect.client.removeSelf = function (id) {
@@ -110,7 +113,8 @@ $(function () {
     }
 
     adobeConnect.client.addEvent = function (s, checked, isUpdate) {
-        adobeConnect.server.addSelf(s,$('#content').attr('data-userId'),checked,isUpdate)
+        alert(isUpdate);
+        adobeConnect.server.addSelf(s,$('#content').attr('data-userId'),checked,isUpdate, window.max)
     }
     
     
@@ -122,6 +126,7 @@ $(function () {
     $.connection.hub.start().done(function () {
         adobeConnect.server.getAllAppointments()
             .done(function (data) {
+                console.log(data);
                 $('.spinner').remove();
                 $('#calendar').fullCalendar({
                     header: {
@@ -170,6 +175,7 @@ $(function () {
                     },
                     eventClick: function (event, element) {
                         if (element.target.className == 'icon-info-sign') {
+                            window.max = event.roomSize;
                             window.Id = event.id;
                             window.isUpdate = true;
                             var cal_hash = element.target.parentElement.hash;
@@ -192,7 +198,7 @@ $(function () {
                             }
 
                             Update = function () {
-                                addAppointment(true, true);
+                                addAppointment(true, true, event);
                             }
                         }
                         else {
@@ -226,32 +232,39 @@ $(function () {
         });
 
         $('#occupants').keyup(function (e) {
-            if ($('#duration option:selected').text() != '') {
+            if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
                 addAppointment(false,window.isUpdate);
+            }
+        });
+
+        $('#duration').on('change', function () {
+            if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
+                addAppointment(false, window.isUpdate);
             }
         });
 
 
         $('#time').on('change', function () {
-            if ($('#duration option:selected').text() != '') {
+            if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
                 addAppointment(false,window.isUpdate);
             }
         });
 
         $('#class').blur(function (e) {
-            if ($('#duration option:selected').text() != '') {
+            if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
                 addAppointment(false,window.isUpdate);
             }
         });
 
         $('#addAppointment').on('show', function () {
-            if($('#duration option:selected').text() != ''){
+            if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
                 addAppointment(false,window.isUpdate);
             }
         });
         
 
         $('#addAppointment').on('hide', function () {
+            window.isUpdate = false;
           $('#occupants').val('50');
 
         });
