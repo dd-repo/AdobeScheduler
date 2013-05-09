@@ -3,13 +3,12 @@
 /// <reference path="~/Scripts/fullcalendar.js" />
 
 $(function () {
-    window.isUpdate = false;
+    IsUpdate = false;
     window.max = 50;
     var adobeConnect = $.connection.adobeConnect;
-
-
     addAppointment = function (checked, isUpdate, event) {
         var roomId = window.Id;
+        isUpdate = IsUpdate;
         var userId = $('#content').attr('data-userId');
         var class_name = $('#class option:selected').text();
         var url = $('#class option:selected').attr('data-url');
@@ -18,14 +17,14 @@ $(function () {
         var time = $('#time').val();
         var room_size = $('#occupants').val();
         var end = $('#duration option:selected').text();
-        adobeConnect.server.addAppointment(checked, window.isUpdate, roomId, userId, class_name, room_size, url, path, date, time, end);
+        adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, date, time, end);
         if (checked) { $('#addAppointment').modal('hide'); }
     }
 
     //DatPicker Set Up 
     $('#date').datepicker({}).on('changeDate', function () {
-        if ($('#duration option:selected').text() != '' && $('#occupants').val() != '')  {
-            addAppointment(false);
+        if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
+            addAppointment(false, IsUpdate);
         }
     });
     // TimePicker Set Up
@@ -34,7 +33,8 @@ $(function () {
    
 
     adobeConnect.client.addSelf = function (add, event, max) {
-       console.log(event.roomSize, max);
+        console.log(event.roomSize, max);
+        if (max < 0) { max = 0; }
        var html = "<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Warning!</strong> A maximum of <b> " + max + "</b> occupants <small> <u>including the host</u> </small> are avaible" + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
@@ -113,7 +113,7 @@ $(function () {
     }
 
     adobeConnect.client.addEvent = function (s, checked, isUpdate) {
-        alert(isUpdate);
+        console.log(isUpdate);
         adobeConnect.server.addSelf(s,$('#content').attr('data-userId'),checked,isUpdate, window.max)
     }
     
@@ -171,19 +171,21 @@ $(function () {
                             var html = "<input disabled type='submit' id='AppointMent_Submit' onclick='addAppointment(true,false)' class='btn btn-success' value='Create Appointment' />";
                             $('.modal-footer').html(html);
                             $('#addAppointment').modal('show');
+                            IsUpdate = false;
                         }
                     },
                     eventClick: function (event, element) {
                         if (element.target.className == 'icon-info-sign') {
                             window.max = event.roomSize;
                             window.Id = event.id;
-                            window.isUpdate = true;
+                            IsUpdate = true;
                             var cal_hash = element.target.parentElement.hash;
                             $('#class option:selected').text(event.title);
                             $('#date').val(getDate(event.start));
                             $('#time').val(convertTime(event.start));
                             $('#occupants').val(event.roomSize);
-                            $('#duration option:selected').text(getDuration(event.start, event.end));
+                            //$('#duration option:selected').text(getDuration(event.start, event.end));
+                            $('#duration').val(getDuration(event.start, event.end));
                             var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
                             $('.modal-footer').html(html);
                             $('#addAppointment').modal('show');
@@ -233,42 +235,43 @@ $(function () {
 
         $('#occupants').keyup(function (e) {
             if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-                addAppointment(false,window.isUpdate);
+                addAppointment(false, IsUpdate);
             }
         });
 
         $('#duration').on('change', function () {
             if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-                addAppointment(false, window.isUpdate);
+                addAppointment(false, IsUpdate);
             }
         });
 
 
         $('#time').on('change', function () {
             if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-                addAppointment(false,window.isUpdate);
+                addAppointment(false, IsUpdate);
             }
         });
 
         $('#class').blur(function (e) {
             if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-                addAppointment(false,window.isUpdate);
+                addAppointment(false, IsUpdate);
             }
         });
 
         $('#addAppointment').on('show', function () {
             if ($('#duration option:selected').text() != '' && $('#occupants').val() != '') {
-                addAppointment(false,window.isUpdate);
+                addAppointment(false, IsUpdate);
             }
         });
         
 
         $('#addAppointment').on('hide', function () {
-            window.isUpdate = false;
-          $('#occupants').val('50');
+            console.log('hidden');
+          //$('#occupants').val('50');
 
         });
         $('#reserve_room').click(function () {
+            IsUpdate = false;
             var html = "<input disabled type='submit' id='AppointMent_Submit' onclick='addAppointment(true)' class='btn btn-success' value='Create Appointment' />";
             $('.modal-footer').html(html);
             if ($('#date').val() == "") {

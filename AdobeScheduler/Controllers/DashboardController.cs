@@ -32,19 +32,20 @@ namespace AdobeScheduler.Controllers
             return View();
         }
 
-        [Authorize]
         public ActionResult Room(string room)
         {
             UserSession model = (UserSession)Session["UserSession"];
-
+            
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
                 room = "/" + room + "/";
                 var query = (from r in _db.Appointments where r.url == room select r).First();
                 if (query != null)
                 {
-                    ViewObject viewObject = new ViewObject(model, query);
-                    return View(viewObject);
+                    if (DateTime.Now < query.start) {
+                        return RedirectToAction("Index", "Dashboard");
+                    }
+                    return View(query);
                 }
                 else
                 {

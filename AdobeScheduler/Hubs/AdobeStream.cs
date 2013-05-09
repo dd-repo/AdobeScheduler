@@ -71,18 +71,7 @@ namespace AdobeScheduler.Hubs
                 using (AdobeConnectDB _db = new AdobeConnectDB())
                 {
                     var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
-                    if (query.start >= date || query.start <= date)
-                    {
-                        query.start = date;
-                        query.roomSize = int.Parse(roomSize);
-                        query.title = name;
-                        query.adobeUrl = url;
-                        query.url = path;
-                        query.start = date;
-                        query.end = end;
-                        Clients.Caller.addEvent(query, isChecked, true);
-                        return false;
-                    }
+                    query.start = date;
                     query.roomSize = int.Parse(roomSize);
                     query.title = name;
                     query.adobeUrl = url;
@@ -92,7 +81,7 @@ namespace AdobeScheduler.Hubs
                     if (isChecked)
                     {
                         _db.SaveChanges();
-                        Clients.All.addEvent(query, true, true);
+                        Clients.All.addEvent(query, isChecked, true);
                         return true;
                     }
                     else
@@ -138,20 +127,27 @@ namespace AdobeScheduler.Hubs
 
                 foreach (Appointment appoinment in query)
                 {
-                    selfTotal += appoinment.roomSize;
+                    if (appoinment.id != data.id) {
+                        selfTotal += appoinment.roomSize;
+                    }
                 }
 
                 var calendarData = ConstructObject(data, id);
                 remaining = 50 - selfTotal;
-                if (isUpdate) { 
-                    remaining = (50 - selfTotal+max);
-                    Clients.Caller.updateSelf(calendarData);
+                if (isUpdate) {
+                    if (isChecked)
+                    {
+                        Clients.Caller.updateSelf(calendarData);
+                        return;
+                    }
                 }
                 if (isChecked)
                 {
                     Clients.Caller.addSelf(true, calendarData, remaining);
+                    return;
                 }
                 Clients.Client(Context.ConnectionId).addSelf(false, calendarData, remaining);
+                return;
 
             }
 

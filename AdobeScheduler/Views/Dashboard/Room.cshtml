@@ -1,7 +1,7 @@
-﻿@model AdobeScheduler.Models.ViewObject
+﻿@model AdobeScheduler.Models.Appointment
 @{
-    ViewBag.Title = @Model.Appointment.title;
+    ViewBag.Title = @Model.title;
     Layout = "~/Views/Shared/_RoomLayout.cshtml";
  
 }
-<iframe src="@Model.Appointment.adobeUrl" name="embed_meeting_room_open" width="100%" height="100%" scrolling="auto" frameborder="0" seamless></iframe>
+<iframe src="@Model.adobeUrl" name="embed_meeting_room_open" width="100%" height="100%" scrolling="auto" frameborder="0" seamless></iframe>
