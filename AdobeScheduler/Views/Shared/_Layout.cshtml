@@ -9,15 +9,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
-    @Scripts.Render("~/js")
-    @Styles.Render("~/Content/calendar")
-
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aguafina+Script">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+    <script src="~/Scripts/jquery.pnotify.js"></script>
+    @Scripts.Render("~/app")
     @Styles.Render("~/content/css")
-    
-    @Scripts.Render("~/bundles/modernizr")
-    <script>
-    </script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui-timepicker-addon.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aguafina+Script" />
+
 </head>
 <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
   <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
@@ -27,8 +30,6 @@
   <body class=""> 
   <!--<![endif]-->
     
-    <div class="navbar">
-        <div class="navbar-inner">
                 <ul class="nav pull-right">
                     <li id="fat-menu" class="dropdown">
                         <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
@@ -42,40 +43,15 @@
                     </li>
                     
                 </ul>
-                <a class="brand" >Academic Tech</a>
-        </div>
-    </div>
 
     
-    
-    <div id="sidebar-nav">
-        
-        <ul id="dashboard-menu" class="nav nav-list">
-            <li class="active"><a href="/"><i class="icon-calendar"></i> <span>AdobeScheduler</span></a>    
-        </ul>
-    </div>
-    
-    <div class="content">
-        <div class="container-fluid">
-            <div class="row-fluid">
-
+   
 
 <div id='content' data-userId="@Context.User.Identity.Name">
      @RenderBody()
 </div>
 
-               
-                <footer>
-                    <hr>
-                    <p class="pull-right">Designed with Twitter Bootstrap</p>
-                    <p>&copy; 2012 <a href="http://southern.edu">Southern Adventist University</a></p>
-                </footer>
-                
-            </div>
-        </div>
-    </div>
     
     <script src="~/SignalR/Hubs"></script>
-    @RenderSection("scripts", required: false)
 </body>
 </html>

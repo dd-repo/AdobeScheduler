@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdobeScheduler.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,6 +7,7 @@ using System.Web.Mvc;
 using AdobeScheduler.Security;
 using AdobeConnectSDK;
 using AdobeScheduler.Models;
+using Newtonsoft.Json;
 
 namespace AdobeScheduler.Controllers
 {
@@ -39,7 +41,7 @@ namespace AdobeScheduler.Controllers
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
                 room = "/" + room + "/";
-                var query = (from r in _db.Appointments where r.url == room select r).First();
+                var query = (from r in _db.Appointments where r.url == room select r).FirstOrDefault();
                 if (query != null)
                 {
                     if (DateTime.Now < query.start) {

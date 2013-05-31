@@ -36,27 +36,25 @@ namespace AdobeScheduler
             bundles.Add(new StyleBundle("~/Content/calendar").Include(
                 "~/Content/fullcalendar.css"));
 
-            bundles.Add(new ScriptBundle("~/js").Include(
-                "~/Scripts/jquery-1.9.1.js",
-                "~/Scripts/jquery.signalR-1.0.0.js",
-                "~/Scripts/bootstrap.js",
-                "~/Scripts/jquery.validate.js",
-                "~/scripts/jquery.validate.unobtrusive.js",
-                "~/Scripts/jquery.validate.unobtrusive-custom-for-bootstrap.js",
+            bundles.Add(new ScriptBundle("~/app").Include(
+                "~/Scripts/jquery.signalR-1.0.1.js",
                 "~/Scripts/fullcalendar.js",
-                "~/Scripts/bootstrap-datepicker.js",
-                "~/Scripts/bootstrap-timepicker.js",
-                "~/Scripts/chosen.jquery.js"
+                "~/Scripts/App/adobeCalendar.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/auth").Include(
+               "~/Scripts/jquery.signalR-1.0.1.js",
+               "~/Scripts/fullcalendar.js",
+               "~/Scripts/App/login.js"
+               ));
+
             bundles.Add(new StyleBundle("~/content/css").Include(
-                "~/Content/bootstrap.css",
-                "~/Content/datepicker.css",
                 "~/Content/bootstrap-timepicker.css",
+                "~/Content/fullcalendar.css",
+                "~/Content/datepickercss",
                 "~/Content/Site.css",
-                "~/Content/chosen.css",
-                "~/Content/bootstrap-responsive.css",
-                "~/Content/bootstrap-mvc-validation.css"
+                "~/Content/jquery.pnotify.default.css",
+                "~/Content/jquery.pnotify.default.icons.css"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(

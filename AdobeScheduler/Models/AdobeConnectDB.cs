@@ -10,5 +10,6 @@ namespace AdobeScheduler.Models
     {
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<LoginUser> AdobeUserInfo { get; set; }
     }
 }

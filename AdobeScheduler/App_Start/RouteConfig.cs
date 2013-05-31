@@ -18,7 +18,6 @@ namespace AdobeScheduler
                 url: "reports",
                 defaults: new { controller = "Dashboard", action = "Report" }
             );
-
             
             routes.MapRoute(
                 name: "Logout",

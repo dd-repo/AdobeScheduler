@@ -34,6 +34,20 @@ namespace AdobeScheduler.Controllers
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, hashTicket);
                     HttpContext.Response.Cookies.Add(cookie);
                     UserSession userSession = new UserSession(con.GetMyMeetings(), con.GetUserInfo());
+                    using (AdobeConnectDB _db = new AdobeConnectDB()) {
+                        var check = _db.AdobeUserInfo.Where(u => u.Username == user.Username).FirstOrDefault();
+                        if (check == null)
+                        {
+                            _db.AdobeUserInfo.Add(user);
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            check = user;
+                            _db.SaveChanges();
+                        }
+                       
+                    }
                     Session["UserSession"] = userSession;
                 }
                 else {
