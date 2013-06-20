@@ -1,13 +1,13 @@
-﻿
+﻿html,
 body {
-  margin: 0px;
-  padding: 0px;
   background: #FFF;
-  color: #333;
+  font-family:OpenSansLight;
+  padding:0px;
 }
 
 a:hover {
   text-decoration: none;
+  color:#e1a358;
 }
 h1 {
   color: #41414c;
@@ -55,7 +55,7 @@ hr {
   background-image: none;
 }
 .fc-state-highlight {
-  background: #ebebee;
+  background: #e1a358; /*Today square on Month calendar*/
 }
 .fc-button.fc-state-active {
   border-color: #2485f3;
@@ -63,6 +63,7 @@ hr {
 .fc-button-effect {
   display: none;
 }
+
 .fc-corner-left .fc-button-inner {
   background-color: #f0f0f2;
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#f0f0f2));
@@ -124,12 +125,229 @@ hr {
   background-image: none;
 }
 
+/*-------Header-------*/
+#header {
+    height:120px;
+    border-bottom:1px solid #dddde2;
+}
 
+#SiteTitle {
+    font-size:14px;
+    position:relative;
+    left:285px;
+    bottom:30px;
+    width:300px;
+}
 
-	#calendar {
-		width: 100%;
-		margin: 0 auto;
+#LogInfo {
+    font-size:14px;
+    float:right;
+    position:relative;
+    bottom:50px;
+}
+
+#Logo {
+    width:190px;
+    height:90px;
+    padding:30px 0px 0px 75px; 
+    border-right:1px solid #dddde2;
+}
+/*------End Header-----*/
+
+/*------Month & Year Titles-----*/
+span.month {
+        font-family:OpenSansExtrabold;
+        font-size:100px;
+        color:#184f2c;
+        padding:0px 0px 0px 12px;
     }
+span.day {
+        font-family:OpenSansExtrabold;
+        font-size:100px;
+        color:#184f2c;
+        width:246px;
+        text-align:right;
+        display:block;
+        float:left;
+        margin-right:16px;
+}
+span.year {
+        font-size:100px;
+        width:246px;
+        text-align:right;
+        display:block;
+        float:left;
+}
+.fc-header-center {
+    text-align:left !important;
+    position:relative;
+}
+.fc-header-title h2 {
+    font-size:100px;
+    color:#bcbcbc;
+    margin-bottom:10px;
+}
+/*---End Month & Year Titles---*/
+
+/*---Navigation---*/
+#main-menu {
+    float:right;
+    position:relative;
+    left:221px;
+    font-size:32px;
+    color:#e1a358;
+    cursor:pointer;
+    height:86px;
+    margin:50px 25px -136px 0px;
+}
+#main-menu i.icon-plus {
+    float:left;
+    height:25px;
+    font-style:normal;
+    padding:20px 10px;
+}
+
+.fc-header-left .fc-button-next { /*finger images*/
+    background: url("images/right-finger.png") no-repeat center !important;
+}
+.fc-header-left .fc-button-prev {
+    background:url("images/left-finger.png") no-repeat center !important;
+    margin-left:10px;
+}
+.fc-text-arrow {
+    display:none;
+}
+.fc-header-left { 
+    width:150px !important;
+    position:absolute;
+    margin-top:187px; /*Pushes fingers, today, month down*/
+    margin-left:103px;
+}
+.fc-header-left .fc-button-next,
+.fc-header-left .fc-button-prev {
+    width:62px;
+    height:35px;
+}
+
+
+.fc-header-left span.fc-button-today,
+    .fc-header-left span.fc-button-month {
+        display:block;
+        width:128px;
+        float:none;
+        text-align:right;
+    }
+
+.fc-button-today, .fc-button-month {
+    height:40px;
+    display:block;
+    padding-top:20px !important;
+    line-height:normal !important;
+    font-size:32px;
+    cursor:pointer;
+}
+.fc-header .fc-button {
+    margin-bottom: 0px;
+    padding:0px;
+}
+/*--End Navigation--*/
+	
+/*--Calendar & Items--*/
+#calendar {
+    padding:0px 0px 25px;
+}
+#calendar div.fc-grid {
+        background-image:url("images/backpic2.jpg");
+        background-size:cover;
+        background-repeat:no-repeat;
+}
+#calendar div.fc-grid table thead { /*Gridline*/
+        background-color:#FFF;
+        border:none;
+}
+#calendar div.fc-grid table thead th { /*Weekdays positioning*/
+        border:none;
+        text-align:left;
+        color:#41414c;
+        padding:13px 0px 8px;
+}
+.fc-day-number {
+    color:#ffffff;
+    text-shadow:0px 0px 5px rgba(55,55,55, 0.3);
+    font-family:OpenSansBold;
+}
+.fc-grid .fc-day-number {
+    float:none !important;
+}
+/*--End Calendar & Items--*/
+
+/*--Today Scheduler & Items--*/
+#calendar div.fc-agenda {
+    margin-left:5px;
+    margin-top:40px;
+}
+#calendar div.fc-agenda thead {
+    display:none;
+}
+.fc-agenda-allday {
+    background-color:#bcbcbc;
+    height:65px;
+    font-variant:small-caps;
+    color:#fff;
+}
+.fc-agenda-divider {
+    display: none; /*Hides redundant Date row in Today Scheduler*/
+}
+.fc-event-vert { /*Resizes event box on Today View to extend full width*/
+    left:92px !important;
+}
+div.fc-view-agendaDay .fc-event-time, div.fc-view-agendaDay .fc-event-title { /*Pushes event box text ONLY on Today Schedular -- genius :) */
+    padding:0px 0px 0px 10px;
+}
+/*--End Today Scheduler & Items--*/
+
+/*--Jquery Ui Widget Fixes--*/
+.ui-widget {
+    font-family:OpenSansLight !important;
+}
+.ui-widget-header {
+    border: none !important;
+}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family:OpenSansLight !important;
+    font-size:12px !important;
+    font-weight:normal;
+}
+.ui-corner-all {
+    border-bottom-right-radius:0px !important;
+    border-bottom-left-radius:0px !important;
+    border-top-right-radius:0px !important;
+    border-top-left-radius:0px !important;
+}
+.ui-dialog {
+    padding: 0px !important;
+}
+.ui-dialog-title {
+        text-align:left !important;
+    }
+    .ui-dialog-buttonset {
+        float: none !important;
+        text-align:right !important;
+    }
+.ui-dialog-titlebar {
+    border:none !important;
+}
+.alert-info strong{
+    color:#e1a358;
+    margin-right:10px;
+}
+.ui-datepicker {
+    padding:0px !important;
+}
+.ui-timepicker-div {
+    padding: 0px 8px;
+}
+/*--End Jquery Ui Widget Fixes--*/
 
     .waiting {
         cursor: wait !important;
@@ -161,22 +379,14 @@ hr {
         z-index:999999999999;
     }
     
-    .ui-dialog-title {
-        text-align:left !important;
-    }
-    .ui-dialog-buttonset {
-        float: none !important;
-        text-align:right !important;
-    }
+    
     .delete {
         background:linear-gradient(180deg, #C40000, #8C0000) !important;
         color:#FFF !important;
         float:left !important;
     }
 
-    span.month {
-        font-size:100px;
-    }
+    
     .create, 
     .update {
         background:linear-gradient(180deg, #058C00, #035C00) !important;
@@ -190,34 +400,7 @@ hr {
     progress {
         text-align: center !important;
     }
-    #calendar div.fc-grid {
-        background-image:url("http://images.anandtech.com/reviews/tablets/apple/ipad4/DSC_2058.jpg");
-        background-size:cover;
-        background-repeat:no-repeat;
-    }
-    #calendar div.fc-grid table thead {
-        background-color:#FFF;
-        border:none;
-    }
-    #calendar div.fc-grid table thead th {
-        border:none;
-        text-align:left;
-    }
-    .fc-header-left {
-        position:absolute;
-        left:0px;
-        margin-top:150px;
-    }
-    .fc-header-left span.fc-button-today,
-    .fc-header-left span.fc-button-month {
-        display:block;
-        width:120px;
-        float:none;
-        text-align:right;
-    }
-    .fc-header-left span.fc-button-prev {
-        margin-left:55px;
-    }
+    
     .fc-header-left span.fc-header-space {
         display:none;
     }
@@ -231,13 +414,13 @@ hr {
         background-color:transparent;
         background:none;
     }
-    .fc-header-left span.fc-state-disabled {
-    }
-
-    .fc-header-left span.fc-state-down,
-    .fc-header-left span.fc-state-active {
-
-    }
-    .fc-content {
-        margin-left:150px;
-    }
+.fc-state-disabled,
+.fc-button-month.fc-state-active {
+    cursor:default;
+}
+.fc-button-today.fc-state-disabled {
+    color: #e1a358 !important;
+}
+.fc-content {
+    margin-left:265px;
+}

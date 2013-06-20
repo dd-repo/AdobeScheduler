@@ -14,12 +14,14 @@
     <script src="~/Scripts/jquery-ui-timepicker-addon.js"></script>
     <script src="~/Scripts/moment.js"></script>
     <script src="~/Scripts/jquery.pnotify.js"></script>
+    <script src="~/Scripts/jquery.activity-indicator-1.0.0.js"></script>
     @Scripts.Render("~/app")
     @Styles.Render("~/content/css")
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/jquery-ui-timepicker-addon.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aguafina+Script" />
+    <link rel="stylesheet" type="text/css" href="~/Content/fonts/opensans.css" />
 
 </head>
 <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
@@ -29,28 +31,19 @@
   <!--[if (gt IE 9)|!(IE)]><!--> 
   <body class=""> 
   <!--<![endif]-->
-    
-                <ul class="nav pull-right">
-                    <li id="fat-menu" class="dropdown">
-                        <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-user"></i> @Context.User.Identity.Name
-                            <span class="caret"></span>
-                        </a>
 
-                        <ul class="dropdown-menu">
-                            <li><a tabindex="-1" href="logout">Logout</a></li>
-                        </ul>
-                    </li>
-                    
-                </ul>
-
-    
-   
-
+<!--Header-->
+<div id="header">
+    <div id="Logo"><img src="/Content/images/Logo.jpg"/></div>
+    <div id="SiteTitle">Adobe Connect Scheduler</div>
+    <div id="LogInfo">@Context.User.Identity.Name
+        <a tabindex="-1" href="logout">Logout</a>
+    </div>
+</div>                               
+                         
 <div id='content' data-userId="@Context.User.Identity.Name">
      @RenderBody()
 </div>
-
     
     <script src="~/SignalR/Hubs"></script>
 </body>

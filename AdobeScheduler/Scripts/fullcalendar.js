@@ -47,7 +47,9 @@ var defaults = {
 	titleFormat: {
 		month: 'MMMM yyyy',
 		week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
-		day: 'dddd, MMM d, yyyy'
+        /*Changed this to match PSD format -- Max*/
+		day: 'yyyy dddd, d'
+        
 	},
 	columnFormat: {
 		month: 'ddd',

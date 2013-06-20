@@ -6,9 +6,9 @@ using System.Linq;
 using System.Web;
 using AdobeConnectSDK;
 using AdobeScheduler.Models;
-using System.Threading.Tasks;
 using System.Globalization;
 using System.Web.UI;
+using System.Threading.Tasks;
 namespace AdobeScheduler.Hubs
 {
 
@@ -165,21 +165,22 @@ namespace AdobeScheduler.Hubs
            
         }
 
-        public List<CalendarData> GetAllAppointments(string jsDate)
+        async public Task<List<CalendarData>> GetAllAppointments(string jsDate)
         {
-            
+            DateTime Date = DateTime.Parse(jsDate);
+            DateTime DateS = Date.AddHours(-2);
+            DateTime DateM = Date.AddMonths(-1);
             using (AdobeConnectDB _db = new AdobeConnectDB())
-            {   
+            {
 
-                var query = (from r in _db.Appointments select r).ToList();
+                var query = (from r in _db.Appointments where (r.end >=DateS && r.start >= DateM) select r).ToList();
                 List<CalendarData> calList = new List<CalendarData>();
                 foreach(Appointment res in query)
                 {
                     var obj = ConstructObject(res, HttpContext.Current.User.Identity.Name,jsDate);
                     calList.Add(obj);
                 }
-
-                return calList;
+                 return await Task.Run(() => calList);
             }
         }
 

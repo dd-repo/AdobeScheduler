@@ -8,6 +8,7 @@ using AdobeScheduler.Security;
 using AdobeConnectSDK;
 using AdobeScheduler.Models;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace AdobeScheduler.Controllers
 {
@@ -32,6 +33,14 @@ namespace AdobeScheduler.Controllers
         public ActionResult Report()
         {
             return View();
+        }
+
+        public JsonResult EventFeed()
+        {
+            string jsDate = Request.QueryString["date"];
+            AdobeStream stream = new AdobeStream();
+            var eventList = stream.GetAllAppointments(jsDate);
+            return Json(eventList, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Room(string room)

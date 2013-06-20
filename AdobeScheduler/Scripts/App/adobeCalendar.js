@@ -3,6 +3,7 @@
 /// <reference path="~/Scripts/fullcalendar.js" />
 
 $(function () {
+    Events = {};
     $.pnotify.defaults.styling = "jqueryui";
     window.alert = function (message) {
         $.pnotify({
@@ -55,7 +56,7 @@ $(function () {
     }
     adobeConnect.client.addSelf = function (add, event, max, jsHandle) {
         if (max < 0) { max = 0; }
-       var html = "<div class='alert alert-info'><strong style='float:left;'> Warning!</strong> A maximum of <b> " + max + "</b> occupants <small> <u>including the host</u> </small> are avaible" + "</div>"
+       var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
             $('#create').attr("disabled", true);
@@ -64,7 +65,7 @@ $(function () {
                 var msg = "Event: "+event.title+" update failed. A maximum of " + max + " participants are avabiable for this time period!"
                 notifier(false, "Updating", msg,rt,null,'error');
             }
-            html = "<div class='alert alert-warning'><strong style='float:left;'>Warning!</strong> Seats are filled or you are over the alloted maximum of <b>" +max+ "</b></div>";
+            html = "<div class='alert alert-warning'><strong style='float:left;'> Warning! </strong> Seats are filled or you are over the alloted maximum of <b>" +max+ "</b></div>";
         }
         $('#error').html(html);
         if (add) {
@@ -190,35 +191,74 @@ $(function () {
         });
     }, 30000);
 
-    Calendar = function (data) {
-            $('#calendar').fullCalendar({
+    Calendar = function (events) {
+          $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today month',
                     center: 'title',
                     right:''
                 },
                 titleFormat: {
-                    month: 'yyyyMMMM'
+                    month: '\'<span class="year">\'yyyy\'</span><span class="month">\'MMMM\'</span>\'',
+                    day: '\'<span class="day">\'dddd\'</span>\' M/d/yyyy'
                 },
                 monthNames: [
-                    '<span class="month">January</span>',
-                    '<span class="month">February</span>',
-                    '<span class="month">March</span>',
-                    '<span class="month">April</span>',
-                    '<span class="month">May</span>',
-                    '<span class="month">June</span>',
-                    '<span class="month">July</span>',
-                    '<span class="month">August</span>',
-                    '<span class="month">September</span>',
-                    '<span class="month">October</span>',
-                    '<span class="month">November</span>',
-                    '<span class="month">December</span>'
+                    'JANUARY',
+                    'FEBRUARY',
+                    'MARCH',
+                    'APRIL',
+                    'MAY',
+                    'JUNE',
+                    'JULY',
+                    'AUGUST',
+                    'SEPTEMBER',
+                    'OCTOBER',
+                    'NOVEMBER',
+                    'DECEMBER'
                 ],
+                monthNamesShort: [
+                    'JAN',
+                    'FEB',
+                    'MAR',
+                    'APR',
+                    'MAY',
+                    'JUN',
+                    'JUL',
+                    'AUG',
+                    'SEP',
+                    'OCT',
+                    'NOV',
+                    'DEC'
+                ],
+                dayNames: [
+                    'SUN',
+                    'MON',
+                    'TUE',
+                    'WED',
+                    'THU',
+                    'FRI',
+                    'SAT'],
+                buttonText: {
+                    prev: "",
+                    next: "",
+                    prevYear: "",
+                    nextYear: "",
+                    today: 'TODAY',
+                    month: 'MONTH'
+                },
                 defaultView: 'month',
                 editable: false,
                 eventAfterRender: function (event, element, view) {
                     var height = $(element).height();
 
+                },
+                loading: function (isLoading) {
+                    if (isLoading) {
+                        //$('#busy1').activity();
+                    }
+                    else {
+                        $('#busy1');
+                    }
                 },
                 eventRender: function (event, element, view) {
                     var roomHtml;
@@ -244,8 +284,8 @@ $(function () {
                     }
 
                 },
-                events: function (start, end, callback) {
-                   notifier(true,"Loading Events...",'',callback, data,'info');
+                events: function (start, end, cb) {
+                    cb(events);
                 },
                 dayClick: function (date, allDay, jsEvent, view) {
                     if (view.name == 'month') {
@@ -256,8 +296,6 @@ $(function () {
 
                     if (view.name == 'agendaDay') {
                         $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm A "));
-                        var html = "<input disabled type='submit' id='AppointMent_Submit' onclick='addAppointment(true,false)' class='btn btn-success' value='Create Appointment' />";
-                        $('.modal-footer').html(html);
                         IsUpdate = false;
                         console.log("Now:", moment());
                         console.log("Date;", date);
@@ -380,7 +418,7 @@ $(function () {
 
                 
 
-        
+    
         $('.numbersOnly').keyup(function () {
             this.value = this.value.replace(/[^0-9\.]/g, '');
         });

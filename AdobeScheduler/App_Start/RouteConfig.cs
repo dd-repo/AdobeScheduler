@@ -18,6 +18,12 @@ namespace AdobeScheduler
                 url: "reports",
                 defaults: new { controller = "Dashboard", action = "Report" }
             );
+
+            routes.MapRoute(
+                name: "Events",
+                url: "events",
+                defaults: new { controller = "Dashboard", action = "EventFeed"}
+            );
             
             routes.MapRoute(
                 name: "Logout",
