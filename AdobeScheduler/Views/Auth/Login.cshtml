@@ -4,20 +4,20 @@
     Layout = "~/Views/Shared/_Auth.cshtml";
 
 }
-<p class="brand"> Academic Tech</p>
+<span id="logo-login"><img src="/Content/images/logo-login.jpg"/></span>
+<p class="brand"> Online Campus<br /><span class="subTitle">Adobe Connect Calendar</span></p>
 <div class="block">
     <div id="error"></div>            
       @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id="loginform", @class="form-vertical" }))
       {
           <p>@Html.ValidationMessageFor(m => m.Username, null, new { style = "font-size; .8em; color:red;" })</p>
           <p>@Html.ValidationMessageFor(m => m.Password, null, new { style = "font-size; .8em; color:red;" })</p>
-        <label>Username</label>
-        @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class="span12",id="uname" })
-        <label>Password</label>
-        @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class="span12", id="pass" })
+        <span id="username">Username</span> @Html.TextBoxFor(m => m.Username, new { placeholder = "Connect UserName", @class="span12",id="uname" })
+        <span id="password">Password</span> @Html.PasswordFor(m => m.Password, new { placeholder = "Connect Password", @class="span12", id="pass" })
+        
        }      
         <div class="form-actions">
-           <button id="login" class="btn btn-success pull-right">Button</button>
+           <button id="login" class="btn btn-success pull-right">Login</button>
             <div class="clearfix"></div>
         </div>
 

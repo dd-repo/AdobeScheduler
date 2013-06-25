@@ -4,7 +4,14 @@
 
 $(function () {
     var adobeConnect = $.connection.adobeConnect;
-
+    $(document).keypress(function (event) {
+        console.log(event);
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        console.log(keycode);
+        if (keycode == '13') {
+            $('button#login').click();
+        }
+    });
     $.connection.hub.start().done(function () {
         $('button#login').click(function (e) {
             adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
@@ -22,4 +29,5 @@ $(function () {
             })
         });
     });
+    
 });

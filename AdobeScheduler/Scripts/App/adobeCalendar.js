@@ -46,10 +46,10 @@ $(function () {
         var end = (event == undefined) ? $('#duration option:selected').text() : getDuration(event.start, event.end);
         var js = (jsHandle == undefined) ? false : true;
             
-        adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime,  end, js)
+        adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js)
             .done(function (e) {
                 return e;
-            })
+            });
         if (checked) {
             $('#addAppointment').dialog('close');
         }
@@ -94,7 +94,6 @@ $(function () {
     }
 
     adobeConnect.client.date = function (date) {
-        console.log("Date: ",date)
     }
 
     adobeConnect.client.updateSelf = function (event) {
@@ -159,9 +158,6 @@ $(function () {
             });
         }
     }
-    $('input#AppointMent_Submit').on('click', function () {
-        
-    });
 
     OpenEvents = setInterval(function () {
         var events = $('#calendar').fullCalendar('clientEvents');
@@ -250,7 +246,6 @@ $(function () {
                 editable: false,
                 eventAfterRender: function (event, element, view) {
                     var height = $(element).height();
-
                 },
                 loading: function (isLoading) {
                     if (isLoading) {
@@ -269,7 +264,6 @@ $(function () {
                     }
 
                     adobeConnect.server.checkHost($('#content').attr('data-userId'), event.title).done(function (e) {
-                        console.log(event.archived);
                         if (e && !event.archived) {
                             var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>'
                             element.find(".fc-event-title").append(
@@ -297,8 +291,6 @@ $(function () {
                     if (view.name == 'agendaDay') {
                         $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm A "));
                         IsUpdate = false;
-                        console.log("Now:", moment());
-                        console.log("Date;", date);
                         if (moment().subtract('m', 30) > moment(date))
                         { alert("Events cannot be created in the past"); return; }
                         $('#addAppointment').dialog({
@@ -321,7 +313,6 @@ $(function () {
                     }
                 },
                 eventClick: function (event, element) {
-                    console.log(element);
                     if (element.target.tagName == 'I') {
                         window.max = event.roomSize;
                         window.Id = event.id;
@@ -331,7 +322,6 @@ $(function () {
                         $('#datetime').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
                         $('#occupants').val(event.roomSize);
                         //$('#duration option:selected').text(getDuration(event.start, event.end));
-                        console.log(getDuration(event.start, event.end));
                         $('#duration').val(getDuration(event.start, event.end));
                         var html = "<input type='submit' onclick='delete_confirm()' class='btn btn-danger' style='float:left' value='Delete Appointment' /><input disabled type='submit' onclick='Update()' id='AppointMent_Submit' class='btn btn-success' value='Update Appointment' />";
                         $('.modal-footer').html(html);
@@ -372,7 +362,22 @@ $(function () {
                         }
                     }
                     else {
-                        if (event.url) window.open(event.url, event.title);
+                        if (event.url) {
+                            adobeConnect.server.login($('#content').attr('data-userId')).done(function (res) {
+                                if (res != "") {
+                                    $('#request').html("<iframe src='" + res + "'" + " ></iframe>");
+                                    setTimeout(function () {
+                                        $('#loginform').submit();
+                                    }, 100);
+
+                                } else {
+                                    html = "<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button><strong style='float:left;'>Error!</strong> Invalid Credentials </div>";
+                                    $('#error').html(html);
+                                }
+
+                            });
+                            window.open(event.url, event.title);
+                        }
                     }
                     return false;
                 },
@@ -389,10 +394,13 @@ $(function () {
                     rt = revertFunc;
 
                 },
+                eventDragStart: function (event, jsEvent, ui, view) {
+                },
+                eventDragStop: function (event, jsEvent, ui, view) {
+                },
                 eventResize: function (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
                     window.Id = event.id;
                     IsUpdate = true;
-                    console.log(getDuration(event.start, event.end));
                     if (getDuration(event.start, event.end) > 90) {
                         revertFunc();
                         alert("Events Cannot be longer than 90 miniutes");
@@ -437,9 +445,9 @@ $(function () {
 
     
     // DateTimePicker Set Up
-        $('#datetime').datetimepicker({ minDate: 0 });
         $('#datetime').datetimepicker({
-            timeFormat: 'hh:mm TT',
+            minDate: 0,
+            timeFormat: "hh:mm TT",
             minuteGrid: 10
         });
         $('#datetime').on('hide', function () {

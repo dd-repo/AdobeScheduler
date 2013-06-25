@@ -236,12 +236,14 @@
     <Content Include="Content\fonts\OpenSans-SemiboldItalic-webfont.svg" />
     <Content Include="Content\fonts\opensans.css" />
     <Content Include="Content\fullcalendar.css" />
+    <Content Include="Content\fullcalendar.max.css" />
     <Content Include="Content\fullcalendar.print.css" />
-    <Content Include="Content\images\backpic3.jpg" />
+    <Content Include="Content\images\backpic2.jpg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\left-finger.png" />
     <Content Include="Content\images\logo.jpg" />
+    <Content Include="Content\images\logo-login.jpg" />
     <Content Include="Content\images\right-finger.png" />
     <Content Include="Content\jquery-ui-timepicker-addon.css" />
     <Content Include="Content\jquery.pnotify.default.css" />

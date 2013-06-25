@@ -125,6 +125,70 @@ hr {
   background-image: none;
 }
 
+/*-------Login--------*/
+#logo-login {
+    position:relative;
+    top:130px;
+    width:150px;
+    height:96px;
+}
+.row-fluid { /*sets width of entire page*/
+    padding:25px 0px;
+    margin:0px auto;
+    width:725px !important;
+}
+.brand { /*title*/
+    font-size: 63px;
+    font-family:OpenSansExtraBold !important;
+    padding:0px 0px 0px 231px;
+    margin:10px 0px 15px 0px !important;
+    border-bottom:1px solid #dddde2;
+}
+.subTitle {
+    position:relative;
+    top:-38px;
+    margin-left:5px;
+    font-family:OpenSansLight; 
+    font-size:43%;
+}
+#username, #password, #login {
+    font-size:18px;
+    position:relative;
+}
+#username {
+    top:8px;
+}
+#password {
+    top:38px;
+}
+#login { /*button*/
+    width:103px;
+    height:45px;
+    top:80px;
+    left:618px;
+    background-color:#184f2c;
+    font-family:OpenSansLight;
+    color:#fff;
+
+    border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+.span12 {
+    float:right;
+    width:580px;
+    height:35px;
+    margin-bottom:15px;
+    padding-left:8px;
+    background-color:#FAFFBD;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+
 /*-------Header-------*/
 #header {
     height:120px;
@@ -273,7 +337,7 @@ span.year {
 }
 .fc-day-number {
     color:#ffffff;
-    text-shadow:0px 0px 5px rgba(55,55,55, 0.3);
+    text-shadow:0px 0px 10px rgba(55,55,55, 0.7);
     font-family:OpenSansBold;
 }
 .fc-grid .fc-day-number {
@@ -284,10 +348,10 @@ span.year {
 /*--Today Scheduler & Items--*/
 #calendar div.fc-agenda {
     margin-left:5px;
-    margin-top:40px;
+    margin-top:20px;
 }
 #calendar div.fc-agenda thead {
-    display:none;
+    visibility:hidden;
 }
 .fc-agenda-allday {
     background-color:#bcbcbc;
@@ -296,7 +360,7 @@ span.year {
     color:#fff;
 }
 .fc-agenda-divider {
-    display: none; /*Hides redundant Date row in Today Scheduler*/
+     /*Hides redundant Date row in Today Scheduler*/
 }
 .fc-event-vert { /*Resizes event box on Today View to extend full width*/
     left:92px !important;
@@ -394,7 +458,7 @@ div.fc-view-agendaDay .fc-event-time, div.fc-view-agendaDay .fc-event-title { /*
     }
     form,
     .form-horizontal .control-group {
-        margin:0px !important;
+        /*margin:0px !important;*/
     }
 
     progress {

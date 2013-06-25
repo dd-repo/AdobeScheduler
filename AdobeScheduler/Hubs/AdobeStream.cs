@@ -103,23 +103,31 @@ namespace AdobeScheduler.Hubs
 
         }
 
-        public string Login(string username, string password)
+        public string Login(string username, string password=null)
         {
             AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
             StatusInfo sInfo;
-            if (adobeObj.Login(username, password, out sInfo)== false)
+            using (AdobeConnectDB _db = new AdobeConnectDB())
             {
-                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                { return ""; }
+                var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
+                if (password == null)
+                {
+                    password = query.Password;
+                }
+                if (adobeObj.Login(username, password, out sInfo) == false)
+                {
+                    if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                    { return ""; }
+                    else
+                    {
+                        return "";
+                    }
+                }
                 else
                 {
-                    return "";
+                    string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}", username, password);
+                    return _targetUrl;
                 }
-            }
-            else
-            {
-                string _targetUrl = string.Format("http://turner.southern.edu/api/xml?action=login&login={0}&password={1}",username,password);
-                return _targetUrl;
             }
         }
 

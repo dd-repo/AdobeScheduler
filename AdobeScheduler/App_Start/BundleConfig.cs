@@ -49,8 +49,7 @@ namespace AdobeScheduler
                ));
 
             bundles.Add(new StyleBundle("~/content/css").Include(
-                "~/Content/bootstrap-timepicker.css",
-                "~/Content/fullcalendar.css",
+                "~/Content/fullcalendar.max.css",
                 "~/Content/datepickercss",
                 "~/Content/Site.css",
                 "~/Content/jquery.pnotify.default.css",
