@@ -7,7 +7,7 @@ body {
 
 a:hover {
   text-decoration: none;
-  color:#e1a358;
+  color:#bcbcbc;
 }
 h1 {
   color: #41414c;
@@ -55,7 +55,7 @@ hr {
   background-image: none;
 }
 .fc-state-highlight {
-  background: #e1a358; /*Today square on Month calendar*/
+  background: #bcbcbc; /*Today square on Month calendar & Today view*/
 }
 .fc-button.fc-state-active {
   border-color: #2485f3;
@@ -208,6 +208,7 @@ hr {
     float:right;
     position:relative;
     bottom:50px;
+    margin-right:18px;
 }
 
 #Logo {
@@ -257,7 +258,7 @@ span.year {
 #main-menu {
     float:right;
     position:relative;
-    left:221px;
+    left:222px;
     font-size:32px;
     color:#e1a358;
     cursor:pointer;
@@ -318,10 +319,10 @@ span.year {
 	
 /*--Calendar & Items--*/
 #calendar {
-    padding:0px 0px 25px;
+    padding:0px 15px 0px 0px;
 }
 #calendar div.fc-grid {
-        background-image:url("images/backpic2.jpg");
+        background-image:url("images/backimg2.jpg");
         background-size:cover;
         background-repeat:no-repeat;
 }
@@ -336,12 +337,16 @@ span.year {
         padding:13px 0px 8px;
 }
 .fc-day-number {
-    color:#ffffff;
+    color:#fff;
     text-shadow:0px 0px 10px rgba(55,55,55, 0.7);
-    font-family:OpenSansBold;
+    font-family:Arial;
+    font-weight:600;
 }
 .fc-grid .fc-day-number {
     float:none !important;
+}
+.fc-event {
+    background-color:#184f2c !important;
 }
 /*--End Calendar & Items--*/
 
@@ -354,7 +359,7 @@ span.year {
     visibility:hidden;
 }
 .fc-agenda-allday {
-    background-color:#bcbcbc;
+    background-color:#333;
     height:65px;
     font-variant:small-caps;
     color:#fff;

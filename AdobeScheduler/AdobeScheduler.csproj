@@ -238,7 +238,7 @@
     <Content Include="Content\fullcalendar.css" />
     <Content Include="Content\fullcalendar.max.css" />
     <Content Include="Content\fullcalendar.print.css" />
-    <Content Include="Content\images\backpic2.jpg" />
+    <Content Include="Content\images\backimg2.jpg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\left-finger.png" />
