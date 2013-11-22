@@ -5,16 +5,18 @@
 $(function () {
     var adobeConnect = $.connection.adobeConnect;
     $(document).keypress(function (event) {
-        console.log(event);
+        //console.log(event);
         var keycode = (event.keyCode ? event.keyCode : event.which);
-        console.log(keycode);
+        //console.log(keycode);
         if (keycode == '13') {
             $('button#login').click();
         }
     });
     $.connection.hub.start().done(function () {
         $('button#login').click(function (e) {
+            console.log("Beginning Login");
             adobeConnect.server.login($('#uname').val(), $('#pass').val()).done(function (res) {
+                console.log("Results: " + res);
                 if (res != "") {
                     $('#request').html("<iframe src='" + res + "'" + " ></iframe>");
                     setTimeout(function () {

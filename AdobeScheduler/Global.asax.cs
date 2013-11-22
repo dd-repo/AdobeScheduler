@@ -19,30 +19,14 @@ namespace AdobeScheduler
 
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static RouteBase hubRoute;
        
         protected void Application_Start(object sender, EventArgs e)
         {
-            hubRoute = RouteTable.Routes.MapHubs();
             AreaRegistration.RegisterAllAreas();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-        }
-
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-            if (IsSignalRRequest(Context))
-            {
-                Context.SetSessionStateBehavior(SessionStateBehavior.ReadOnly);
-            }
-        }
-
-        private bool IsSignalRRequest(HttpContext context)
-        {
-            RouteData routeData = hubRoute.GetRouteData(new HttpContextWrapper(context));
-            return routeData != null;
         }
 
         void MvcApplication_PostAuthenticateRequest(object sender, EventArgs e)
