@@ -1,4 +1,5 @@
 ﻿using AdobeScheduler.Security;
+using AdobeScheduler.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
+using System.Data.Entity;
 
 namespace AdobeScheduler
 {
@@ -22,6 +24,11 @@ namespace AdobeScheduler
        
         protected void Application_Start(object sender, EventArgs e)
         {
+            //init db and force it to create by invoking context
+            //Database.SetInitializer(new DatabaseInitializer());
+            //AdobeConnectDB db = new AdobeConnectDB();
+            //db.Database.Initialize(true);
+
             AreaRegistration.RegisterAllAreas();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

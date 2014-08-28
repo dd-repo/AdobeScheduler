@@ -270,11 +270,12 @@ namespace AdobeScheduler.Hubs
 
         public bool checkHost(string username, string meeting)
         {
+            AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
+            StatusInfo sInfo;
+
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
                 var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
-                AdobeConnectXmlAPI adobeObj = new AdobeConnectXmlAPI();
-                StatusInfo sInfo;
                 List<String> meetingList = new List<String>();
                 if (adobeObj.Login(username, query.Password, out sInfo)){
                     var myMeeting = adobeObj.GetMyMeetings();

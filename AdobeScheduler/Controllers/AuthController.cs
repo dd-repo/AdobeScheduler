@@ -38,7 +38,11 @@ namespace AdobeScheduler.Controllers
                         var check = _db.AdobeUserInfo.Where(u => u.Username == user.Username).FirstOrDefault();
                         if (check == null)
                         {
-                            _db.AdobeUserInfo.Add(user);
+                            var newlogin = new LoginUser(); 
+                            newlogin.Username = user.Username;
+                            newlogin.Password = user.Password; 
+                            newlogin.Id = id;
+                            _db.AdobeUserInfo.Add(newlogin);
                             _db.SaveChanges();
                         }
                         else
