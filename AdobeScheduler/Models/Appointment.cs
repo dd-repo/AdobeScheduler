@@ -17,6 +17,7 @@ namespace AdobeScheduler.Models
         public bool allDay { get; set; }
         public int roomSize { get; set; }
 
+
         public Appointment()
         {
             this.allDay = false;

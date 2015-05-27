@@ -9,13 +9,17 @@ namespace AdobeScheduler.Models
     public class AdobeConnectDB : DbContext
     {
 
-        static AdobeConnectDB()
+        /*static AdobeConnectDB()
         {
             Database.SetInitializer<AdobeConnectDB>(null);
         }
 
         public AdobeConnectDB()
             : base("Name=DefaultConnection")
+        {
+        }*/
+        public AdobeConnectDB()
+            : base("Name=local_marr.mdf")
         {
         }
 
