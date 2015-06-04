@@ -23,7 +23,6 @@
                         foreach( AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
                         {
                             <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
-                            
                         }
                     }else{
                         <option>You have no Class Rooms Assigned</option>
@@ -38,7 +37,7 @@
                 <label class="control-label">Event Repetition:</label>
                 <div class="controls">
                     <select id="repitition" style="width: 80px">
-                        <option value="none" selected>None</option>
+                        <option value="None" selected>None</option>
                         <option value="weekly">Weekly</option>
                         <option value="biweekly">Biweekly</option>
                         <option value="monthly">Monthly</option>

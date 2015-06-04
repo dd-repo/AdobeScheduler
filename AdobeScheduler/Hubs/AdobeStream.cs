@@ -9,6 +9,7 @@ using AdobeScheduler.Models;
 using System.Globalization;
 using System.Web.UI;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 namespace AdobeScheduler.Hubs
 {
 
@@ -180,8 +181,36 @@ namespace AdobeScheduler.Hubs
             DateTime DateM = Date.AddMonths(-1);
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
+                /*var query _db.Database.SqlQuery()
+                List<Appointment> query = new List<Appointment>();
+                try
+                {
+                    query = (from r in _db.Appointments where (r.end >= DateS && r.start >= DateM) select r).ToList();
+                catch(Exception e)
+                {
+                    throw e;
+                }
+                //querying the data for the population of the calandar object
+                var query = _db.Database.SqlQuery<Appointment>("SELECT * FROM dbo.Appointments WHERE end <= @dateM AND start >= @dateS",
+                     new SqlParameter("dateM", DateM), 
+                     new SqlParameter("dateS", DateS)).ToList();
+                string tDateS = DateM.ToString("yyyy-MM-dd HH:mm:ss"),
+                       tDateM = DateS.ToString("yyyy-MM-dd HH:mm:ss");*/
 
-                var query = (from r in _db.Appointments where (r.end >=DateS && r.start >= DateM) select r).ToList();
+                List<Appointment> query = new List<Appointment>();
+                //querying the data for the population of the calandar object
+                try
+                {
+                    /*query = _db.Database.SqlQuery<Appointment>("SELECT * FROM dbo.Appointments   WHERE 'end' >= {0} AND 'start' >= {1}",
+                         DateS.ToString("yyyy-MM-dd HH:mm:ss"),
+                         DateM.ToString("yyyy-MM-dd HH:mm:ss")).ToList();*/
+                    query = (from r in _db.Appointments where (r.end >= DateS && r.start >= DateM) select r).ToList();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+                
                 List<CalendarData> calList = new List<CalendarData>();
                 foreach(Appointment res in query)
                 {
@@ -244,7 +273,18 @@ namespace AdobeScheduler.Hubs
             int Id = int.Parse(id);
             using (AdobeConnectDB _db =  new AdobeConnectDB()){
 
-                var query = from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet;
+                //querying the data for the population of the calandar object for deletion 
+                List<Appointment> query = new List<Appointment>();
+                try
+                {
+                    query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }              
+
+                //var query = from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet;
                 foreach (Appointment res in query){
                     _db.Appointments.Remove(res);
                 }
@@ -263,6 +303,7 @@ namespace AdobeScheduler.Hubs
             int Id = int.Parse(id);
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
+
                 var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).FirstOrDefault();
                 return ConstructObject(query, query.userId,jsDate);
             }

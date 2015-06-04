@@ -54,41 +54,17 @@ $(function () {
         //if the selected DOM object is none, send false, otherwise true
         var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);//(event == undefined) ? ($('#repitition option:selected').text() === "none" ? false : true) : event.isMult;
 
-        //function used to figure out if we are a rep event
-        var repeatedEvent = numOfRepEvents(event);
+        //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
+        var repId = (event == undefined) ? ((isMultiple === false) ? null : String(randomString(20) + userId)) : event.repititionId;
 
-        //if the event is undefined, check the DOM for the value, otherwise use the event value
-        var repId = (event == undefined) ? ((repeatedEvent === null) ? null : String(randomString(20) + event.title)) : event.repititionId;
+        //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
+        var JSendRepDate = (event == undefined) ? ((isMultiple === false) ? null : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
 
-        //if the event is undefined, check the DOM for the value, otherwise use the event value
-        var JSendRepDate = (event == undefined) ? ((repeatedEvent === null) ? null : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
-
-        //if we are indeed a multiple event
-        //TODO: Remove one if both work, unnessary to analyze both variables
-        if (isMultiple === true || repeatedEvent.isMult === true) {
-            //add the events in repitition
-            for (var i = 0; i <= repeatedEvent.numEvents; i++) {
-                //add the event
-                adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate)
-                    .done(function (e) {
-                        return e;
-                    });
-
-                //change the end date as well to represent the changes needed
-                end = getDuration(currDate, event.end);
-
-                //increment by 1, 2, or 4 weeks
-                datetime = datetime.Add(repeatedEvent.repType, 'weeks');
-            }
-        }
-            //otherwise proceed as normal
-        else {
             adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate)
                 .done(function (e) {
                     return e;
                 });
-        }
-
+ 
         /* !!ORIGIONAL CODE!! -- DO NOT DELETE
          * adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js)
          *   .done(function (e) {
@@ -202,7 +178,7 @@ $(function () {
             }
                 //otherwise it's an invalid date range
             else {
-                alert("Event: " + event.title + " has an invalid repeat date range. Creating single instance of " + event.title);
+                alert("Event: Has an invalid repeat date range. Creating single instance...");
                 return null;
             }
         }
@@ -455,6 +431,7 @@ $(function () {
                     var cal_hash = element.target.parentElement.hash;
                     $('#class option:selected').text(event.title);
                     $('#datetime').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
+                    $('#repitition_date').val(moment(event.start).format("MM/DD/YYYY hh:mm A "));
                     $('#occupants').val(event.roomSize);
                     //$('#duration option:selected').text(getDuration(event.start, event.end));
                     $('#duration').val(getDuration(event.start, event.end));
@@ -620,6 +597,57 @@ $(function () {
                         if (moment().subtract('m', 15) > moment($('#datetime').val()))
                         { alert("Events cannot be created in the past"); return; }
 
+
+                        /*//if the selected DOM object is none, send false, otherwise true
+                        var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
+
+                        //function used to figure out if we are a rep event
+                        var repeatedEvent = numOfRepEvents(event);
+
+                        //if we are indeed a multiple event
+                        if (isMultiple === true || repeatedEvent.isMult === true) {
+                            console.log("attempting to create multiple events");
+
+                            //if the event is undefined, check the DOM for the value, otherwise use the event value
+                            //var repId = (event == undefined) ? ((repeatedEvent === null) ? null : String(randomString(20) + event.title)) : event.repititionId;
+                            //if the event is undefined, check the DOM for the value, otherwise use the event value
+                            //var JSendRepDate = (event == undefined) ? ((repeatedEvent === null) ? null : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
+
+
+                            //if event is undefined, we do not want to do anything!
+                            if (event != undefined) {
+
+                                //update the event object to valid repitition and end rep dates
+                                event.repititionId = repId;
+                                event.endRepDate = JSendRepDate;
+                                
+                                var tmpEnd = getDuration(event.start, event.end);
+
+                                //add the events in repitition
+                                for (var i = 0; i <= repeatedEvent.numEvents; i++) {
+
+                                    //add the event
+                                    addAppointment(true);
+
+                                    //change the end date as well to represent the changes needed
+                                    event.start = event.start.Add(repeatedEvent.repType, 'weeks');
+
+
+                                    //end = getDuration(currDate, event.end);
+                                    //increment by 1, 2, or 4 weeks
+                                    //datetime = datetime.Add(repeatedEvent.repType, 'weeks');
+                                }
+                                alert("Repeated appointment sucessfuly created.");
+                            }
+                            else {
+                                console.log("event is undefined");
+                            }
+                        }
+                        else {
+                            console.log("creating singular event");
+                            addAppointment(true);
+                            alert("Appointment sucessfuly created.");
+                        }*/
 
 
                         //check if event rep is selected, if so call however many addappointments via loop or something
