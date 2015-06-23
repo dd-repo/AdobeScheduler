@@ -181,7 +181,7 @@ $(function () {
                 notifier(false, "Finished", "Creation is complete", null, null, 'success');
         }
         else {
-            IsUpdate = true;
+            //IsUpdate = true;
             addAppointment(true, update);
             //alert("Appointment sucessfuly created.");
         }
@@ -204,47 +204,49 @@ $(function () {
         var repType = 0;
         var isMult = false;
         //if the selected repitition is set to something and the end moment is atleast a week away
-        if ($("#repitition option:selected").text() != "None" && endMoment.add(1, 'weeks') > moment($('#datetime').val())) {
-            //the temporary moment adn its clone
-            var tempMoment = moment($('#datetime').val());
-            var tmpClone = tempMoment.clone();
-            //end plus one
-            var endClone = endMoment.clone();
-            //the number of events which will be generated
-            var numberOfEvents = 0;
-            //loop through until we are at end date, increment the number of events encountered
-            for (tempMoment ; endMoment > tmpClone.add(1, 'weeks') ; tempMoment.add(1, 'weeks'), tmpClone = tempMoment.clone()) {
-                numberOfEvents++;
-            }
+        if ($("#repitition option:selected").text() != "None" && endMoment != null) {
+            if(endMoment.add(1, 'weeks') > moment($('#datetime').val())){
+                //the temporary moment adn its clone
+                var tempMoment = moment($('#datetime').val());
+                var tmpClone = tempMoment.clone();
+                //end plus one
+                var endClone = endMoment.clone();
+                //the number of events which will be generated
+                var numberOfEvents = 0;
+                //loop through until we are at end date, increment the number of events encountered
+                for (tempMoment ; endMoment > tmpClone.add(1, 'weeks') ; tempMoment.add(1, 'weeks'), tmpClone = tempMoment.clone()) {
+                    numberOfEvents++;
+                }
 
-            //check for the number of events to be created
-            if ($("#repitition option:selected").text() === "Weekly") {
-                numEvents = Math.ceil(numberOfEvents);
-                repType = 1;
-            }
-            else if ($("#repitition option:selected").text() === "Biweekly") {
-                numEvents = Math.ceil(numberOfEvents / 2);
-                repType = 2;
-            }
-            else if ($("#repitition option:selected").text() === "Monthly") {
-                numEvents = Math.ceil(numberOfEvents / 4);
-                repType = 4;
-            }
-            else {
-                numEvents = null;
-            }
+                //check for the number of events to be created
+                if ($("#repitition option:selected").text() === "Weekly") {
+                    numEvents = Math.ceil(numberOfEvents);
+                    repType = 1;
+                }
+                else if ($("#repitition option:selected").text() === "Biweekly") {
+                    numEvents = Math.ceil(numberOfEvents / 2);
+                    repType = 2;
+                }
+                else if ($("#repitition option:selected").text() === "Monthly") {
+                    numEvents = Math.ceil(numberOfEvents / 4);
+                    repType = 4;
+                }
+                else {
+                    numEvents = null;
+                }
 
-            //this should never not be evaluated to true. Simple fail safe
-            if (numEvents != null) {
-                isMult = true;
-            }
+                //this should never not be evaluated to true. Simple fail safe
+                if (numEvents != null) {
+                    isMult = true;
+                }
 
-            //return this amazing object
-            return {
-                isMult: isMult,
-                numEvents: numEvents,
-                repType: repType
-            };
+                //return this amazing object
+                return {
+                    isMult: isMult,
+                    numEvents: numEvents,
+                    repType: repType
+                };
+            }
         }
             //otherwise, return the object
         else {
@@ -851,8 +853,8 @@ $(function () {
                         click: function () {
                             if (moment().subtract('m', 15) > moment($('#datetime').val()))
                             { alert("Events cannot be created in the past"); return; }
-
-                            //if the selected DOM object is none, send false, otherwise true
+                            updateOrCreate(false);
+                            /*//if the selected DOM object is none, send false, otherwise true
                             var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
 
                             //function used to figure out if we are a rep event
@@ -880,8 +882,8 @@ $(function () {
                                 console.log("creating singular event");
                                 addAppointment(true);
                                 notifier(false, "Created", "Appointment sucessfuly created", null, null, 'success');
+                            }*/
                             }
-                        }
                         },
                         {
                             text: 'Cancel',

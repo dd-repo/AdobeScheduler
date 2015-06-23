@@ -134,7 +134,16 @@ namespace AdobeScheduler.Hubs
             DateTime date = DateTime.Parse(JsdateTime);
             int endtime = int.Parse(Jsmin);
             DateTime end = date.AddMinutes(endtime);
-            DateTime endRepTime = DateTime.Parse(JSendRepDate);
+            DateTime endRepTime;
+            //if there is no end rep time
+            if (JSendRepDate == "")
+            {
+                endRepTime = end;
+            }
+            else
+            {
+                endRepTime = DateTime.Parse(JSendRepDate);
+            }
             if (int.Parse(roomSize) > 50)
             {
                 return false;
