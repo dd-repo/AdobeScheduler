@@ -39,7 +39,7 @@ $(function () {
         }
     });
 
-    addAppointment = function (checked, isUpdate, jsHandle, event) {
+    addAppointment = function (checked, isUpdate, jsHandle, event, changeAll) {
         var roomId = window.Id;
         isUpdate = IsUpdate;
         var userId = (event == undefined) ? $('#content').attr('data-userId') : event.userId;
@@ -55,12 +55,23 @@ $(function () {
         var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);//(event == undefined) ? ($('#repitition option:selected').text() === "none" ? false : true) : event.isMult;
 
         //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
-        var repId = (event == undefined) ? ((isMultiple === false) ? null : String(randomString(20) + userId)) : event.repititionId;
+        var repId = (event == undefined) ? ((isMultiple === false) ? null : String(moment().format("MM/DD/YYYY hh:mm A") + userId)) : event.repititionId;
 
         //if the event is undefined, check the DOM for the value, otherwise use the event value the event value will always be defined for rep items
-        var JSendRepDate = (event == undefined) ? ((isMultiple === false) ? null : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
+        var JSendRepDate = (event == undefined) ? ((isMultiple === false) ? $('#datetime').val() : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
 
-            adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate)
+        //if the event is undefined, check the event value
+        var repType = (event == undefined) ? $('#repitition option:selected').text() : event.repititionType;
+
+        //if changeAll = undefined, assume false
+        if (changeAll === undefined) {
+            changeAll = false;
+        }
+
+
+        console.log("This is is Multiple " + isMultiple);
+        console.log("RepId " + repId);
+        adobeConnect.server.addAppointment(checked, isUpdate, roomId, userId, class_name, room_size, url, path, datetime, end, js, isMultiple, repId, JSendRepDate, repType, changeAll)
                 .done(function (e) {
                     return e;
                 });
@@ -111,6 +122,70 @@ $(function () {
         end = new Date(end);
         return (parseInt(end - start) / (1000 * 60));
     }
+    /*
+     * Purpose : updates a multi-day event 
+     *
+     * Parameters : isUpdate : the parameter permiting event creation or update
+     *
+     * Returns : void
+     *
+     *
+     */
+    updateOrCreate = function (currUpdate, update) {
+        if(update==undefined){
+            update = false;
+        }
+        IsUpdate = update;
+        //if the selected DOM object is none, send false, otherwise true
+        var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
+
+        //function used to figure out if we are a rep event
+        var repeatedEvent = numOfRepEvents();
+
+        //if we are indeed a multiple event
+        if (isMultiple === true && repeatedEvent.isMult === true) {
+            //if there is only one event being created, alert the user
+            if (repeatedEvent.numEvents === 1) {
+                //if this event is being updated
+                if (currUpdate)
+                    notifier(false, "Updating", "Updating single instance", null, null, 'success');
+                //if not, set the type to no repitition, and continue
+                else {
+                    notifier(false, "Creating", "Creating single instance, date range provided forcing single instance creation", null, null, 'success');
+                    //$('#repitition option:selected').attr("selected", null);
+                    $('#repitition').val("None");
+                    //$('#repitition option:selected').se = "None";
+                }
+            }
+            else {
+                if (currUpdate)
+                    notifier(false, "Updating", "Updating all instances", null, null, 'success');
+                else
+                    notifier(false, "Creating", "Creating event series", null, null, 'success');
+            }
+
+            var start = moment($('#datetime').val());
+
+            //add the events in repitition
+            for (var i = 0; i < repeatedEvent.numEvents; i++) {
+                //add the event
+                addAppointment(true);
+                //increment the date
+                $('#datetime').val(moment(start.add(repeatedEvent.repType, 'weeks')).format("MM/DD/YYYY hh:mm A "));
+            }
+            //if this event is being updated
+            if (currUpdate)
+                notifier(false, "Finished", "Update complete", null, null, 'success');
+            //if not, set the type to no repitition, and continue
+            else
+                notifier(false, "Finished", "Creation is complete", null, null, 'success');
+        }
+        else {
+            IsUpdate = true;
+            addAppointment(true, update);
+            //alert("Appointment sucessfuly created.");
+        }
+    }
 
     /*
      * Purpose : dictates if an event is a repeatable event
@@ -120,26 +195,27 @@ $(function () {
      * Returns : bool isMult: is the incoming event a milti-event, 
      *           int numEvents: the current count of the multi-event appointment,
      *           int repType: the type of repetition {weekly, biweekly, monthly}
-    */
-    numOfRepEvents = function (event) {
+     */
+    numOfRepEvents = function () {
         //the variable that holds the end moment
-        var end_moment = moment($("#repitition_date").val());
+        var endMoment = moment($("#repitition_date").val());
+        //variables which will be returned
+        var numEvents = 0;
+        var repType = 0;
+        var isMult = false;
         //if the selected repitition is set to something and the end moment is atleast a week away
-        if ($("#repitition option:selected").text() != "None" && end_moment.add(1, 'weeks') > moment($('#datetime').val())) {
-            //the temporary moment
-            var temp_moment = moment($('#datetime').val());
+        if ($("#repitition option:selected").text() != "None" && endMoment.add(1, 'weeks') > moment($('#datetime').val())) {
+            //the temporary moment adn its clone
+            var tempMoment = moment($('#datetime').val());
+            var tmpClone = tempMoment.clone();
+            //end plus one
+            var endClone = endMoment.clone();
             //the number of events which will be generated
             var numberOfEvents = 0;
-
             //loop through until we are at end date, increment the number of events encountered
-            for (temp_moment = moment($('#datetime').val()) ; end_moment.add(1, 'weeks') > temp_moment; temp_moment = temp_moment.subtract(1, 'weeks')) {
+            for (tempMoment ; endMoment > tmpClone.add(1, 'weeks') ; tempMoment.add(1, 'weeks'), tmpClone = tempMoment.clone()) {
                 numberOfEvents++;
             }
-
-            //variables which will be returned
-            var numEvents = 0;
-            var repType = 0;
-            var isMult = false;
 
             //check for the number of events to be created
             if ($("#repitition option:selected").text() === "Weekly") {
@@ -170,16 +246,24 @@ $(function () {
                 repType: repType
             };
         }
-            //otherwise, return null
+            //otherwise, return the object
         else {
             //if the option is "None"
-            if ($("#repitition option:selected").text() != "None") {
-                return null;
+            if ($("#repitition option:selected").text() == "None") {
+                return {
+                    isMult: isMult,
+                    numEvents: numEvents,
+                    repType: repType
+                };
             }
-                //otherwise it's an invalid date range
+            //otherwise it's an invalid date range
             else {
                 alert("Event: Has an invalid repeat date range. Creating single instance...");
-                return null;
+                return {
+                    isMult: isMult,
+                    numEvents: numEvents,
+                    repType: repType
+                };
             }
         }
 
@@ -200,6 +284,29 @@ $(function () {
         }
         return s;
     }
+
+    confirmation = function (question){
+        var defer = $.Deferred();
+        $('<div></div>')
+            .html(question)
+            .dialog({
+                autoOpen: true,
+                modal: true,
+                title: 'Confirmation',
+                buttons: {
+                    "Accept": function () {
+                        defer.resolve("true");//this text 'true' can be anything. But for this usage, it should be true or false.
+                        $(this).dialog("close");
+                    },
+                    "Deny": function () {
+                        defer.resolve("false");//this text 'false' can be anything. But for this usage, it should be true or false.
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        return defer.promise();
+    }
+
     adobeConnect.client.callUpdate = function (event) {
         addAppointment(true, true, true, event);
     }
@@ -376,7 +483,7 @@ $(function () {
 
                 adobeConnect.server.checkHost($('#content').attr('data-userId'), event.title).done(function (e) {
                     if (e && !event.archived) {
-                        var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>'
+                        var html = '<a id="editEvent" href="#' + event.id + '"><i class="ui-icon ui-icon-pencil" style="float:right;"></i></a>';
                         element.find(".fc-event-title").append(
                                 (html));
                     }
@@ -401,23 +508,59 @@ $(function () {
 
                 if (view.name == 'agendaDay') {
                     $('#datetime').val(moment(date).format("MM/DD/YYYY hh:mm A "));
+                    //$('#repitition_date').val(moment(date).format("MM/DD/YYYY hh:mm A "));
                     IsUpdate = false;
                     if (moment().subtract('m', 30) > moment(date))
                     { alert("Events cannot be created in the past"); return; }
                     $('#addAppointment').dialog({
                         title: "Create Appointment",
-                        buttons: {
-                            "create": {
-                                id: 'create',
+                        buttons:
+                         [
+                            {
+                                
+                                //id: 'create',
                                 text: 'Create Appointment',
-                                class: 'create',
-                                click: function () { addAppointment(true) }
+                                //class: 'create',
+                                click: function () {
+                                    updateOrCreate(false);
+                                    /*
+                                    //if the selected DOM object is none, send false, otherwise true
+                                    var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
+
+                                    //function used to figure out if we are a rep event
+                                    var repeatedEvent = numOfRepEvents();
+
+                                    //if we are indeed a multiple event
+                                    if (isMultiple === true && repeatedEvent.isMult === true) {
+                                        //if there is only one event being created, alert the user
+                                        if (repeatedEvent.numEvents === 1) {
+                                            alert("Creating single instance, date range provided forcing single instance creation");
+                                        }
+
+                                        var start = moment($('#datetime').val());
+
+                                        //add the events in repitition
+                                        for (var i = 0; i < repeatedEvent.numEvents; i++) {
+                                            //add the event
+                                            addAppointment(true);
+
+                                            //increment the date
+                                            $('#datetime').val(moment(start.add(repeatedEvent.repType, 'weeks')).format("MM/DD/YYYY hh:mm A "));
+                                        }
+                                    }
+                                    else {
+                                        console.log("Creating single event");
+                                        addAppointment(true);
+                                        alert("Appointment sucessfuly created.");
+                                    }*/
+                                }
                             },
-                            "cancel": {
+                            {
                                 text: 'Cancel',
                                 click: function () { $(this).dialog("close") }
                             }
-                        }
+                        
+                        ]
                     });
                     $('#addAppointment').dialog('open');
 
@@ -457,22 +600,133 @@ $(function () {
                             }
                         }
                     });
+
                     $('#addAppointment').dialog('open');
 
                     delete_confirm = function () {
-                        var r = confirm("Are you sure you want to permanantly delete this appoinment?");
-                        if (r == true) {
-                            adobeConnect.server.delete(event.id);
-                            notifier(false, "Deleting", "Event #" + event.id + ": " + event.title + " has been deleted", null, null, 'success');
-                            $('#addAppointment').dialog('close');
-                        }
+                        var id = event.id,
+                            title = event.title,
+                            isRep = event.isRep;
+                        confirmation('Are you sure you want to permanantly delete this appoinment?').then(function (answer) {
+                            if (answer == "false") {
+                                notifier(false, "Calceled", "Transaction Canceled", null, null, 'success');
+                            }
+                            else if (answer == "true") {
+
+                                if (isRep === false) {
+                                    adobeConnect.server.delete(id, false);
+                                    notifier(false, "Deleting", "Event #" + id + ": " + title + " has been deleted", null, null, 'success');
+                                    //$('#addAppointment').dialog('close');
+                                }
+                                else {
+                                    confirmation('The selected event is a repeating event, would you like to remove them all?').then(function (answer) {
+
+                                        if (answer == "false") {
+                                            adobeConnect.server.delete(id, false);
+                                            notifier(false, "Deleting", "Event #" + id + ": " + title + " has been deleted", null, null, 'success');
+                                        }
+                                        else if (answer == "true") {
+                                            adobeConnect.server.delete(id, true);
+                                            notifier(false, "Deleting", "Event #" + id + ": " + title + " and all other events in the series has been deleted", null, null, 'success');
+                                        }
+                                        //$('#addAppointment').dialog('close');
+                                    });
+                                    //$('#addAppointment').dialog('close');
+                                }
+                                $('#addAppointment').dialog('close');
+                            }
+
+                        });
                     }
 
                     Update = function () {
-                        IsUpdate = true;
-                        addAppointment(true, true);
+                        //if the current repitition is not "None"
+                        var id = event.id,
+                            title = event.title;
+                        //if an event is none and the ui is none
+                        if (!($('#repitition option:selected').text() === "None" && event.repititionType === "None")){
+                            //if (event.repititionType != "None") {
+ 
+                            //if the repitition has changed
+                            //if ($('#repitition option:selected').text() != event.repititionType) {
+                            //if we are changing a non repeating to a repeating
+                            if (event.repititionType === "None") {
+                                if ($('#repitition option:selected').text() != event.repititionType) {
+                                    //set isUpdate to false
+                                    IsUpdate = false;
+                                    //delete the origional
+                                    adobeConnect.server.delete(id, false);
+                                    //recreate it with it's repitition
+                                    updateOrCreate(true);
+                                }
+                                else {
+                                    //set is update to true
+                                    IsUpdate = true;
+                                    //modify this one event
+                                    addAppointment(true, true);
+                                }
+                                notifier(false, "Updated", "Event #" + id + ": " + title + " has been updated", null, null, 'success');
+                            }
+                            //otherwise its a repeating event
+                            else {
+                                confirmation('The selected event is a repeating event, would you like to modify the entire series?').then(function (answer) {
+                                    if (answer == "false") {
+                                        if ($('#repitition option:selected').text() != event.repititionType) {
+                                            //set isUpdate to false
+                                            IsUpdate = false;
+                                            //delete only one instance of this
+                                            adobeConnect.server.delete(id, false);
+                                            //update or create new appointment
+                                            updateOrCreate(true);
+                                        }
+                                        else {
+                                            //set is update to true
+                                            IsUpdate = true;
+                                            //modify this one event
+                                            addAppointment(true, true);
+                                        }
+                                            
+                                        notifier(false, "Updated", "Event #" + id + ": " + title + " has been updated", null, null, 'success');
+                                    }
+                                    else if (answer == "true") {
+                                        if ($('#repitition option:selected').text() != event.repititionType) {
+                                            //set isUpdate to false
+                                            IsUpdate = false;
+                                            //delete the entire series
+                                            adobeConnect.server.delete(id, true);
+                                            //re-create with the new parameters
+                                            updateOrCreate(true);
+                                        }
+                                        else {
+                                            //set is update to true
+                                            IsUpdate = true;
+                                            //modify all events in the series
+                                            addAppointment(true, true, undefined, undefined, true);
+                                        }
+                                        notifier(false, "Updated", "Event #" + id + ": " + title + " and all other events in the series has been updated", null, null, 'success');
+                                    }
+                                    $('#addAppointment').dialog('close');
+                                });
+                            }
+                            /*}
+                            //modify the event's inner details
+                            else {
+                                IsUpdate = true;
+                                addAppointment(true, true);
+                            }*/
+                        }
+                        else {
+                            IsUpdate = true;
+                            addAppointment(true, true);
+                        }
                     }
+
+
                 }
+
+
+
+
                 else {
                     if (event.url) {
                         adobeConnect.server.login($('#content').attr('data-userId')).done(function (res) {
@@ -588,77 +842,52 @@ $(function () {
         $('#datetime').val(moment().format("MM/DD/YYYY hh:mm A "));
         $('#addAppointment').dialog({
             title: "Create Appointment",
-            buttons: {
-                "create": {
-                    id: 'create',
-                    text: 'Create Appointment',
-                    class: 'create',
-                    click: function () {
-                        if (moment().subtract('m', 15) > moment($('#datetime').val()))
-                        { alert("Events cannot be created in the past"); return; }
+            buttons:
+                [
+                    {
+                        //id: 'create',
+                        text: 'Create Appointment',
+                        //class: 'create',
+                        click: function () {
+                            if (moment().subtract('m', 15) > moment($('#datetime').val()))
+                            { alert("Events cannot be created in the past"); return; }
 
+                            //if the selected DOM object is none, send false, otherwise true
+                            var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
 
-                        /*//if the selected DOM object is none, send false, otherwise true
-                        var isMultiple = ($('#repitition option:selected').text() === "None" ? false : true);
+                            //function used to figure out if we are a rep event
+                            var repeatedEvent = numOfRepEvents();
 
-                        //function used to figure out if we are a rep event
-                        var repeatedEvent = numOfRepEvents(event);
+                            //if we are indeed a multiple event
+                            if (isMultiple === true || repeatedEvent.isMult === true) {
+                                if (repeatedEvent.numEvents === 1) {
+                                    notifier(false, "Creating", "Creating single instance, date range provided forcing single instance creation", null, null, 'success');
+                                }
 
-                        //if we are indeed a multiple event
-                        if (isMultiple === true || repeatedEvent.isMult === true) {
-                            console.log("attempting to create multiple events");
-
-                            //if the event is undefined, check the DOM for the value, otherwise use the event value
-                            //var repId = (event == undefined) ? ((repeatedEvent === null) ? null : String(randomString(20) + event.title)) : event.repititionId;
-                            //if the event is undefined, check the DOM for the value, otherwise use the event value
-                            //var JSendRepDate = (event == undefined) ? ((repeatedEvent === null) ? null : $('#repitition_date').val()) : moment(event.endRepDate).format("MM/DD/YYYY hh:mm A");
-
-
-                            //if event is undefined, we do not want to do anything!
-                            if (event != undefined) {
-
-                                //update the event object to valid repitition and end rep dates
-                                event.repititionId = repId;
-                                event.endRepDate = JSendRepDate;
-                                
-                                var tmpEnd = getDuration(event.start, event.end);
+                                var start = moment($('#datetime').val());
 
                                 //add the events in repitition
-                                for (var i = 0; i <= repeatedEvent.numEvents; i++) {
-
+                                for (var i = 0; i < repeatedEvent.numEvents; i++) {
                                     //add the event
                                     addAppointment(true);
 
-                                    //change the end date as well to represent the changes needed
-                                    event.start = event.start.Add(repeatedEvent.repType, 'weeks');
-
-
-                                    //end = getDuration(currDate, event.end);
-                                    //increment by 1, 2, or 4 weeks
-                                    //datetime = datetime.Add(repeatedEvent.repType, 'weeks');
+                                    //increment the date
+                                    $('#datetime').val(moment(start.add(repeatedEvent.repType, 'weeks')).format("MM/DD/YYYY hh:mm A "));
                                 }
-                                alert("Repeated appointment sucessfuly created.");
-                            }
-                            else {
                                 console.log("event is undefined");
                             }
+                            else {
+                                console.log("creating singular event");
+                                addAppointment(true);
+                                notifier(false, "Created", "Appointment sucessfuly created", null, null, 'success');
+                            }
                         }
-                        else {
-                            console.log("creating singular event");
-                            addAppointment(true);
-                            alert("Appointment sucessfuly created.");
-                        }*/
-
-
-                        //check if event rep is selected, if so call however many addappointments via loop or something
-                        addAppointment(true);
-                    }
-                },
-                "cancel": {
-                    text: 'Cancel',
-                    click: function () { $(this).dialog("close") }
-                }
-            }
+                        },
+                        {
+                            text: 'Cancel',
+                            click: function () { $(this).dialog("close") }
+                        }
+            ]
         });
         $('#addAppointment').dialog("open");
     });

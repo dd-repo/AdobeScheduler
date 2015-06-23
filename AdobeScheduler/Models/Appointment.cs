@@ -16,6 +16,7 @@ namespace AdobeScheduler.Models
         public DateTime end { get; set; }
         public bool allDay { get; set; }
         public int roomSize { get; set; }
+        public bool isRep { get; set; }        
         /// <summary>
         /// represents the id used for deletion of the series of events
         /// </summary>
@@ -24,6 +25,10 @@ namespace AdobeScheduler.Models
         /// represents the end date of the repetition
         /// </summary>
         public DateTime? endRepDate { get; set; }
+        /// <summary>
+        /// represents the repitition type
+        /// </summary>
+        public string repititionType { get; set; }
 
 
         public Appointment()

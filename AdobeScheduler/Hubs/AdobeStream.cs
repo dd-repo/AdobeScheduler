@@ -28,6 +28,11 @@ namespace AdobeScheduler.Hubs
         public bool editable { get; set; }
         public bool open { get; set; }
         public bool archived { get; set; }
+        public bool isRep { get; set; }
+        public string repititionId { get; set; }
+        public DateTime? endRepDate { get; set; }
+        public string repititionType { get; set; }
+
 
         public CalendarData(){
             this.editable = true;
@@ -103,6 +108,200 @@ namespace AdobeScheduler.Hubs
             }
 
         }
+        /// <summary>
+        /// Overloaded function of AddAppointment
+        /// </summary>
+        /// <param name="isChecked"></param>
+        /// <param name="isUpdate"></param>
+        /// <param name="roomId"></param>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="roomSize"></param>
+        /// <param name="url"></param>
+        /// <param name="path"></param>
+        /// <param name="JsdateTime"></param>
+        /// <param name="Jsmin"></param>
+        /// <param name="jsHandle"></param>
+        /// <param name="isMultiple"></param>
+        /// <param name="repId"></param>
+        /// <param name="JSendRepDate"></param>
+        /// <param name="repType"></param>
+        /// <param name="changeAll"></param>
+        /// <returns></returns>
+        public bool AddAppointment(bool isChecked, bool isUpdate, string roomId, string userId, string name, string roomSize, string url, string path, string JsdateTime, string Jsmin, bool jsHandle, bool isMultiple, string repId, string JSendRepDate, string repType, bool changeAll)
+        {
+
+            DateTime date = DateTime.Parse(JsdateTime);
+            int endtime = int.Parse(Jsmin);
+            DateTime end = date.AddMinutes(endtime);
+            DateTime endRepTime = DateTime.Parse(JSendRepDate);
+            if (int.Parse(roomSize) > 50)
+            {
+                return false;
+            }
+            using (AdobeConnectDB _db = new AdobeConnectDB())
+            {
+                if (!isUpdate)
+                {
+                    Appointment appointment = new Appointment();
+                    CalendarData callendarData = new CalendarData();
+                    if (isMultiple)
+                    {
+                        appointment.userId = userId;
+                        appointment.title = name;
+                        appointment.roomSize = int.Parse(roomSize);
+                        appointment.url = path;
+                        appointment.adobeUrl = url;
+                        appointment.start = date;
+                        appointment.end = end;
+                        appointment.endRepDate = endRepTime;
+                        appointment.repititionId = repId;
+                        appointment.isRep = isMultiple;
+                        appointment.repititionType = repType;
+                        
+                    }
+                    else
+                    {
+                        appointment.userId = userId;
+                        appointment.title = name;
+                        appointment.roomSize = int.Parse(roomSize);
+                        appointment.url = path;
+                        appointment.adobeUrl = url;
+                        appointment.start = date;
+                        appointment.end = end;
+                        appointment.endRepDate = date;
+                        appointment.repititionId = null;
+                        appointment.isRep = isMultiple;
+                        appointment.repititionType = repType;
+                    }
+                    if (isChecked)
+                    {
+                        _db.Appointments.Add(appointment);
+                        _db.SaveChanges();
+                        Clients.All.addEvent(appointment, isChecked, isUpdate, jsHandle);
+                        return true;
+                    }
+                    else
+                    {
+                        Clients.Caller.addEvent(appointment, isChecked, isUpdate, jsHandle);
+                        return false;
+                    }
+
+                }
+                //if it is indeed an update
+                else
+                {
+
+                    int Id = int.Parse(roomId);
+                    List<Appointment> query = new List<Appointment>();
+
+                    //if it is not an update to a series of events
+                    if (!changeAll)
+                    {
+                        query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                        foreach (Appointment res in query)
+                        {
+                            res.start = date;
+                            res.roomSize = int.Parse(roomSize);
+                            res.title = name;
+                            res.adobeUrl = url;
+                            res.url = path;
+                            res.start = date;
+                            res.end = end;
+                            res.endRepDate = endRepTime;
+                        }
+                    }
+                    //if it is an update to a series of events
+                    else
+                    {
+                        Appointment first = new Appointment();
+                        first = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
+                        string repititionId = first.repititionId;
+                        query = (from appointmnet in _db.Appointments where appointmnet.repititionType == repititionId select appointmnet).ToList();
+                        foreach (Appointment res in query)
+                        {
+                            res.start = date;
+                            res.roomSize = int.Parse(roomSize);
+                            res.title = name;
+                            res.adobeUrl = url;
+                            res.url = path;
+                            res.start = date;
+                            res.end = end;
+                            res.endRepDate = endRepTime;
+                        }
+                    }
+
+                    if (isChecked)
+                    {
+                        _db.SaveChanges();
+                        foreach (Appointment res in query)
+                        {
+                            Clients.All.addEvent(res, isChecked, true, jsHandle);
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        foreach (Appointment res in query)
+                        {
+                            Clients.Caller.addEvent(res, isChecked, isUpdate, jsHandle);
+                        }
+                        return false;
+                    }
+
+                    /*
+                                //var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
+                               query.start = date;
+                               query.roomSize = int.Parse(roomSize);
+                               query.title = name;
+                               query.adobeUrl = url;
+                               query.url = path;
+                               query.start = date;
+                               query.end = end;
+                               query.endRepDate = endRepTime;
+                               if (isChecked)
+                               {
+                                   _db.SaveChanges();
+                                   Clients.All.addEvent(query, isChecked, true, jsHandle);
+                                   return true;
+                               }
+                               else
+                               {
+                                   Clients.Caller.addEvent(query, isChecked, isUpdate, jsHandle);
+                                   return false;
+                               } 
+                            */
+                    /*int Id = int.Parse(roomId);
+                    using (AdobeConnectDB _db = new AdobeConnectDB())
+                    {
+                        var query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).Single();
+                        query.start = date;
+                        query.roomSize = int.Parse(roomSize);
+                        query.title = name;
+                        query.adobeUrl = url;
+                        query.url = path;
+                        query.start = date;
+                        query.end = end;
+                        query.endRepDate = endRepTime;
+                        if (isChecked)
+                        {
+                            _db.SaveChanges();
+                            Clients.All.addEvent(query, isChecked, true, jsHandle);
+                            return true;
+                        }
+                        else
+                        {
+                            Clients.Caller.addEvent(query, isChecked, isUpdate, jsHandle);
+                            return false;
+                        }
+                    }*/
+                }
+            }
+
+        }
+
+
 
         public string Login(string username, string password=null)
         {
@@ -238,6 +437,10 @@ namespace AdobeScheduler.Hubs
             callendarData.editable = true;
             callendarData.open = true;
             callendarData.archived = false;
+            callendarData.isRep = appointment.isRep;
+            callendarData.repititionId = appointment.repititionId;
+            callendarData.endRepDate = appointment.endRepDate;
+            callendarData.repititionType = appointment.repititionType;
 
             if (!checkHost(id,callendarData.title))
             {
@@ -267,6 +470,39 @@ namespace AdobeScheduler.Hubs
             }
             return callendarData;
         }
+        /*/// <summary>
+        /// Function to check and see if an event is a Multiple Event
+        /// </summary>
+        /// <param name="id">The id of the event</param>
+        /// <returns>True if the event is a multi event, False if it is not</returns>
+        public bool checkEvent(string id)
+        {
+            int Id = int.Parse(id);
+            using (AdobeConnectDB _db = new AdobeConnectDB())
+            {
+
+                //querying the data for the population of the calandar object for deletion 
+                List<Appointment> query = new List<Appointment>();
+                try
+                {
+                    query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
+                //check to see if there is only one event
+                if (query.Count() == 1)
+                {
+                    //is it a multiple event
+                    if (query[0].isRep == true)
+                    {
+                        return true;
+                    }
+                }                
+            }
+            return false;
+        }*/
 
         public bool Delete(string id)
         {
@@ -298,6 +534,77 @@ namespace AdobeScheduler.Hubs
             return false;
         }
 
+        /// <summary>
+        /// An overloaded function of delete, handels multiple events
+        /// </summary>
+        /// <param name="id">The id of the event to be deleted</param>
+        /// <param name="response">True if all events are to be deleted, false if one is to be deleted</param>
+        /// <returns>True if deletion was sucessful, false if not</returns>
+        public bool Delete(string id, bool response)
+        {
+            int Id = int.Parse(id);
+            using (AdobeConnectDB _db = new AdobeConnectDB())
+            {
+
+                //querying the data for the population of the calandar object for deletion 
+                List<Appointment> query = new List<Appointment>();
+                //if we do want to delete all instances of the appointment
+                if (response == true)
+                {
+                    //holds the initial appointment from which the repId is found
+                    List<Appointment> initial = new List<Appointment>();
+                    //get the ititial appointment
+                    try
+                    {
+                        initial = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+
+                    //get the list of the repeating appointments
+                    try
+                    {
+                        string repititionId = initial[0].repititionId;
+                        query = (from appointmnet in _db.Appointments where appointmnet.repititionId == repititionId select appointmnet).ToList();
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        query = (from appointmnet in _db.Appointments where appointmnet.id == Id select appointmnet).ToList();
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+                }
+                
+
+                //iterate through the list of appointments and delete them all
+                foreach (Appointment res in query)
+                {
+                    _db.Appointments.Remove(res);
+                }
+                //check and see if appointments were deleted
+                if (_db.SaveChanges() > 0)
+                {
+                    //Clients.All.removeSelf(Id);
+                    foreach(Appointment identify in query)
+                        Clients.All.removeSelf(identify.id);
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
         public CalendarData GetEvent(string id, string jsDate)
         {
             int Id = int.Parse(id);
@@ -316,7 +623,14 @@ namespace AdobeScheduler.Hubs
 
             using (AdobeConnectDB _db = new AdobeConnectDB())
             {
-                var query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
+                LoginUser query;
+                try{
+                    query = _db.AdobeUserInfo.Where(u => u.Username == username).FirstOrDefault();
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
                 List<String> meetingList = new List<String>();
                 if (adobeObj.Login(username, query.Password, out sInfo)){
                     var myMeeting = adobeObj.GetMyMeetings();
