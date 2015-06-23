@@ -39,6 +39,14 @@ $(function () {
         }
     });
 
+    $('body').on("change", "#class", function () {
+        var e = document.getElementById("class");
+        var opt = e.options[e.selectedIndex].getAttribute("data-url");
+        var linkText = e.value + " Room Link";
+        $('#room_link').text(linkText);
+        document.getElementById("room_link").href = opt;
+    });
+
     addAppointment = function (checked, isUpdate, jsHandle, event, changeAll) {
         var roomId = window.Id;
         isUpdate = IsUpdate;

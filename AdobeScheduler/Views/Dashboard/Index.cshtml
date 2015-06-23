@@ -19,15 +19,17 @@
                 <label class="control-label">Select Your Room:</label>
                 <div class="controls">
                     <select id="class" width="300" style="width: 300px">
-                    @if(Model.Session.MyMeetings != null){
-                        foreach( AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
-                        {
-                            <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
+                        <option selected="selected" disabled="disabled" data-path="" data-url="">Select Your Room:</option>
+                        @if(Model.Session.MyMeetings != null){
+                            foreach( AdobeConnectSDK.MeetingItem myMeetingItem in Model.Session.MyMeetings)
+                            {
+                                <option data-path="@myMeetingItem.url_path" data-url="@myMeetingItem.FullUrl">@myMeetingItem.meeting_name</option>
+                            }
+                        }else{
+                            <option>You have no Class Rooms Assigned</option>
                         }
-                    }else{
-                        <option>You have no Class Rooms Assigned</option>
-                    }
                     </select>
+                    <a id="room_link" href=""></a>
                 </div>
                 <hr />
                 <label class="control-label">Select a Date And Time:</label>
