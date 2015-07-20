@@ -99,7 +99,52 @@ namespace AdobeConnectSDK
         }
 
 
-  
+        #region SAUOC : Custom Methods
+
+        /// <summary>
+        /// Returns true if user is Admin
+        /// </summary>
+        /// <param name="acl_id">acl_id of the current user</param>
+        /// <returns><see cref="bool"/> bool : user us admin ? true : false</returns>
+        public bool IsAdmin(string acl_id)
+        {
+            StatusInfo iStatus;
+            XmlDocument xDoc = _ProcessRequest("permissions-info", string.Format("acl-id={0}&filter-type=live-admins", acl_id), out iStatus);
+            if (iStatus.Code == StatusCodes.ok && xDoc != null) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the list of all rooms
+        /// </summary>
+        /// <remarks This function facilates the need to return the list of all 
+        /// urls/rooms for admin view
+        /// <returns><see cref="List<List<bool>>"/>List of List of strings {}</returns>
+        public List<List<string>> GetSharedList()
+        {
+            //declare status object to determine if valid
+            StatusInfo iStatus;
+            //declare results list
+            List<List<string>> results = new List<List<string>>();
+
+            //create xDoc based off of processed request (using the meetings sco-id [11002]), terminate if not valid data
+            XmlDocument xDoc = _ProcessRequest("sco-expanded-contents", "sco-id=11002", out iStatus);
+            if (iStatus.Code != StatusCodes.ok || xDoc == null || !xDoc.HasChildNodes) return null;
+
+            foreach (XmlNode node in xDoc.ChildNodes[1].ChildNodes[1].ChildNodes)
+            {
+                //add expanded sco-nodes childrens name and url-path attributes to the results list
+                if (node.ChildNodes[0].InnerText.IndexOf("/")==-1 && node.Attributes["content-source-sco-icon"].Value == "3")
+                {
+                    results.Add(new List<string> { node.ChildNodes[0].InnerText, node.ChildNodes[1].InnerText });
+                }                
+            }
+
+            //return the list
+            return results;
+        }
+
+        #endregion  
 
         #region Logon, User management
 
@@ -448,6 +493,7 @@ namespace AdobeConnectSDK
 
             return piList.ToArray();
         }
+
 
         /// <summary>
         /// Resets all permissions any principals have on a SCO to the permissions of its parent SCO. If

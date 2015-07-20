@@ -424,6 +424,7 @@
     <Content Include="Scripts\jquery.activity-indicator-1.0.0.js" />
     <Content Include="Scripts\jquery.pnotify.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.searchit.js" />
     <Content Include="Scripts\jquery.signalR-2.0.0.js" />
     <Content Include="Scripts\jquery.signalR-2.0.0.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />

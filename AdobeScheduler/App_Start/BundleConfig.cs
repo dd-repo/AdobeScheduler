@@ -24,6 +24,8 @@ namespace AdobeScheduler
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
 
+            bundles.Add(new ScriptBundle("~/Scripts/jquery.searchit.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/js/calendar").Include(
                 "~/Scripts/fullcalendar.min.js"));
 
