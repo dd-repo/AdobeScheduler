@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartup(typeof(SignalRChat.Startup))]
@@ -9,7 +10,9 @@ namespace SignalRChat
     {
         public void Configuration(IAppBuilder app)
         {
-            app.MapSignalR();
+            var hubConfiguration = new HubConfiguration();
+            hubConfiguration.EnableDetailedErrors = true;
+            app.MapSignalR(hubConfiguration);
         }
     }
 }

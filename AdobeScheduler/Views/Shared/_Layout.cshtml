@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="Scripts/jquery.signalR-2.0.0.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.0.0.min.js"></script>
     <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script src="~/Scripts/jquery-ui-timepicker-addon.js"></script>
     <script src="~/Scripts/moment.js"></script>
@@ -18,7 +18,7 @@
     <script src="~/Scripts/jquery.activity-indicator-1.0.0.js"></script>
     @Scripts.Render("~/app")
     @Styles.Render("~/content/css")
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
+    <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
     <link href="~/Content/jquery-ui-timepicker-addon.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="~/Content/fonts/opensans.css" />
@@ -34,7 +34,7 @@
 
 <!--Header-->
 <div id="header">
-    <div id="Logo"><img src="/Content/images/Logo.jpg"/></div>
+    <div id="Logo"><img src="~/Content/images/Logo.jpg"/></div>
     <div id="SiteTitle">Adobe Connect Scheduler</div>
     <div id="LogInfo">@Context.User.Identity.Name
         <a tabindex="-1" href="logout">Logout</a>
