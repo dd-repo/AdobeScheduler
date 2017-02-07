@@ -1,4 +1,4 @@
-﻿/// <reference path="~/Scripts/jquery-1.9.1.js"" />
+﻿/// <reference path="~/Scripts/jquery-1.9.1.min.js"" />
 /// <reference path="~/Scripts/jquery.signalR-1.0.0.js" />
 /// <reference path="~/Scripts/fullcalendar.js" />
 
@@ -22,6 +22,7 @@ $(function () {
     IsUpdate = false;
     roomList = "";
     window.max = 50;
+    window.dmax = 0;
     var adobeConnect = $.connection.adobeConnect;
 
     $('#addAppointment').dialog({
@@ -111,8 +112,10 @@ $(function () {
         var html = "<div class='alert alert-info'><strong style='float:left;'> Warning! </strong>  A maximum of <b> " + max + "</b> occupants <u>including the host</u> are available." + "</div>"
         $("#AppointMent_Submit").prop("disabled", true);
         if (event.roomSize > max) {
+            dmax = max;
             $('#create').attr("disabled", true);
             if (jsHandle) {
+                dmax = max;
                 var msg = "Event: " + event.title + " update failed. A maximum of " + max + " participants are avabiable for this time period!"
                 notifier(false, "Updating", msg, rt, null, 'error');
             }
@@ -120,6 +123,7 @@ $(function () {
         }
         $('#error').html(html);
         if (add) {
+            dmax = max;
             notifier(false, "Creating", "Event: " + event.title + " successfully created", null, null, 'success');
             $('#calendar').fullCalendar('renderEvent', event, true);
         }
@@ -127,6 +131,7 @@ $(function () {
         if (event.roomSize <= max) {
             $('#create').attr("disabled", false);
             if (jsHandle) {
+                dmax = max;
                 IsUpdate = true;
                 addAppointment(true, IsUpdate, false, event);
             }
@@ -849,6 +854,35 @@ $(function () {
         });
         $('#addAppointment').dialog("open");
     });
+
+    $(document).ready(function () {
+        console.log(dmax);
+        $(".ui-dialog-buttonset button").attr('disabled', 'disabled');
+        $("form").keyup(function () {
+            // To Disable Submit Button
+            $(".ui-dialog-buttonset button").attr('disabled', 'disabled');
+            // Validating Fields
+            var num = $("#occupants").val();
+            if (!(num > dmax) && !(num == 0)) {
+                // To Enable Submit Button
+                $(".ui-dialog-buttonset button").removeAttr('disabled');
+                $(".ui-dialog-buttonset button").css({
+                    "cursor": "pointer",
+                    "box-shadow": "1px 0px 6px #333"
+                });
+            }
+        });
+        // On Click Of Submit Button
+        $(".ui-dialog-buttonset button").click(function () {
+            $(".ui-dialog-buttonset button").css({
+                "cursor": "default",
+                "box-shadow": "none"
+            });
+            alert("Form Submitted Successfully..!!");
+        });
+    });
+
+
 
 
 });
